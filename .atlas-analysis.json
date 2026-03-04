@@ -1,0 +1,90 @@
+{
+  "projectType": "frontend",
+  "projectName": "Product Builders Landing",
+  "projectDescription": "A modern Next.js landing page for Product Builders consultancy and mentorship services",
+  "theme": "almond",
+  "primaryColor": "#0ea5e9",
+  "lightColor": "#38bdf8",
+  "darkColor": "#0284c7",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/hero-section",
+              "components/services-section",
+              "components/offerings-section",
+              "components/contact-form",
+              "components/header",
+              "components/footer"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "customization/theming",
+              "customization/internationalization",
+              "customization/configuration"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "deployment/firebase",
+              "deployment/netlify",
+              "deployment/environment-variables"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Server Actions",
+            "pages": [
+              "api/contact-form-action"
+            ]
+          },
+          {
+            "group": "Data",
+            "pages": [
+              "api/services-data",
+              "api/offerings-data"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Responsive Next.js 15 landing page with modern design",
+    "Multi-language support (Spanish, English, Russian)",
+    "Contact form with Resend email integration",
+    "Animated sections with scroll effects",
+    "shadcn/ui component library",
+    "Firebase and Netlify deployment ready"
+  ],
+  "publicApiSurface": [
+    "HeroSection component",
+    "ServicesSection component",
+    "OfferingsSection component",
+    "ContactForm component",
+    "Header component",
+    "Footer component",
+    "submitContactForm server action",
+    "servicesMeta data",
+    "offeringsMeta data"
+  ]
+}
