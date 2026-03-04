@@ -38,8 +38,12 @@
               "components/services-section",
               "components/offerings-section",
               "components/contact-form",
+              "components/cta-section",
               "components/header",
-              "components/footer"
+              "components/footer",
+              "components/logo",
+              "components/locale-switcher",
+              "components/scroll-animation"
             ]
           },
           {

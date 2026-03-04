@@ -1,0 +1,217 @@
+---
+title: Scroll animation
+description: Intersection Observer wrapper component for scroll-triggered fade-in animations
+---
+
+# Scroll Animation
+
+The `ScrollAnimation` component wraps content to add smooth fade-in and slide-up animations when elements scroll into view. It uses the Intersection Observer API for performance-optimized animations.
+
+## Overview
+
+This utility component:
+- Detects when wrapped content enters the viewport
+- Triggers a fade-in and slide-up animation
+- Removes the observer after animation to improve performance
+- Provides customizable animation duration
+
+## Props
+
+<ParamField path="children" type="React.ReactNode" required>
+  The content to animate when it scrolls into view.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Optional additional CSS classes to apply to the wrapper div.
+</ParamField>
+
+<ParamField path="delay" type="string" default="duration-700">
+  Tailwind duration class for animation speed. Options: `duration-300`, `duration-500`, `duration-700`, `duration-1000`.
+</ParamField>
+
+## Usage
+
+The component is used on the main page to animate sections as they scroll into view:
+
+```tsx src/app/page.tsx
+import { ScrollAnimation } from "@/components/scroll-animation";
+import { ServicesSection } from "@/components/services-section";
+import { OfferingsSection } from "@/components/offerings-section";
+
+export default function Home() {
+  return (
+    <main>
+      <HeroSection />
+      <ScrollAnimation>
+        <ServicesSection />
+      </ScrollAnimation>
+      <ScrollAnimation>
+        <OfferingsSection offerings={offerings} />
+      </ScrollAnimation>
+      <ScrollAnimation>
+        <CtaSection offerings={offerings} />
+      </ScrollAnimation>
+    </main>
+  );
+}
+```
+
+## Component Implementation
+
+From `src/components/scroll-animation.tsx`:
+
+```tsx
+"use client";
+
+import { useRef, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+
+interface ScrollAnimationProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: string;
+}
+
+export function ScrollAnimation({
+  children,
+  className,
+  delay = "duration-700",
+}: ScrollAnimationProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          if (ref.current) {
+            observer.unobserve(ref.current);
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "transition-all ease-out",
+        delay,
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+## How It Works
+
+<Steps>
+  <Step title="Initial state">
+    Content starts invisible (`opacity-0`) and shifted down (`translate-y-8`).
+  </Step>
+
+  <Step title="Observer setup">
+    Intersection Observer watches for when the element enters the viewport (threshold: 10%).
+  </Step>
+
+  <Step title="Animation trigger">
+    When visible, state updates to apply `opacity-100` and `translate-y-0`, creating a smooth fade-in and slide-up effect.
+  </Step>
+
+  <Step title="Cleanup">
+    Observer is removed after animation to prevent unnecessary re-renders and improve performance.
+  </Step>
+</Steps>
+
+## Customizing Animation
+
+### Duration
+
+Adjust animation speed with the `delay` prop:
+
+```tsx
+{/* Fast animation */}
+<ScrollAnimation delay="duration-300">
+  <ServicesSection />
+</ScrollAnimation>
+
+{/* Slow animation */}
+<ScrollAnimation delay="duration-1000">
+  <CtaSection />
+</ScrollAnimation>
+```
+
+### Custom Threshold
+
+To modify when the animation triggers, edit the `threshold` in the component:
+
+```tsx
+// Trigger when 50% of element is visible
+const observer = new IntersectionObserver(
+  (entries) => { /* ... */ },
+  { threshold: 0.5 } // Changed from 0.1
+);
+```
+
+### Different Animation Effects
+
+Modify the transition classes to create different effects:
+
+```tsx
+// Fade from left
+isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+
+// Scale up
+isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+
+// Rotate in
+isVisible ? "opacity-100 rotate-0" : "opacity-0 rotate-6"
+```
+
+## Performance Considerations
+
+- **Client-side only**: Component uses `"use client"` directive for hooks
+- **Observer cleanup**: Automatically unobserves elements after animation
+- **Single render**: State only updates once when element becomes visible
+- **Low threshold**: 10% visibility threshold ensures smooth user experience
+
+## Browser Support
+
+Intersection Observer is supported in all modern browsers:
+- Chrome 51+
+- Firefox 55+
+- Safari 12.1+
+- Edge 15+
+
+<Note>
+  For older browser support, consider adding a polyfill or falling back to CSS-only animations.
+</Note>
+
+## Accessibility
+
+- Uses `prefers-reduced-motion` media query automatically via Tailwind's transition classes
+- Content remains accessible to screen readers during animation
+- No motion for users who have reduced motion preferences enabled
+
+## Related
+
+<Card title="Theming" href="/customization/theming">
+  Learn about Tailwind animation configuration
+</Card>

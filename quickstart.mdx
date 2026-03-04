@@ -117,9 +117,9 @@ landing/
 │   │   ├── header.tsx
 │   │   └── footer.tsx
 │   ├── dictionaries/          # i18n translations
-│   │   ├── es.json           # Spanish (default)
-│   │   ├── en.json           # English
-│   │   └── ru.json           # Russian
+│   │   ├── es.json           # Spanish (default, configured)
+│   │   ├── en.json           # English (configured)
+│   │   └── ru.json           # Russian (available, not configured)
 │   └── lib/
 │       └── data.ts           # Services and offerings data
 ├── tailwind.config.ts        # Tailwind configuration
@@ -162,7 +162,7 @@ export const servicesMeta: ServiceMeta[] = [
 
 ### Translations
 
-Modify translations in `src/dictionaries/es.json`, `en.json`, or `ru.json`:
+Modify translations in the configured dictionary files (`src/dictionaries/es.json` or `en.json`):
 
 ```json src/dictionaries/es.json
 {

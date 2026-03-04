@@ -1,0 +1,236 @@
+---
+title: Logo
+description: SVG logo component with gradient styling for Product Builders branding
+---
+
+# Logo
+
+The `Logo` component renders the Product Builders brand logo as an inline SVG. It features a geometric icon with gradient colors and custom typography.
+
+## Overview
+
+This component:
+- Renders as an inline SVG for crisp scaling
+- Uses CSS gradients for vibrant colors
+- Supports className customization
+- Adapts text color via `currentColor`
+
+## Props
+
+<ParamField path="className" type="string">
+  Optional CSS classes to apply to the SVG element. The default includes `text-white` which can be overridden.
+</ParamField>
+
+## Usage
+
+The logo is typically used in the header:
+
+```tsx
+import { Logo } from "@/components/logo";
+
+export function Header() {
+  return (
+    <header>
+      <Logo />
+    </header>
+  );
+}
+```
+
+### Custom styling
+
+```tsx
+{/* Dark logo */}
+<Logo className="text-gray-900" />
+
+{/* Larger logo */}
+<Logo className="w-64 h-auto" />
+
+{/* Custom color */}
+<Logo className="text-blue-600" />
+```
+
+## Component Implementation
+
+From `src/components/logo.tsx`:
+
+```tsx
+import { cn } from "@/lib/utils";
+
+export function Logo({ className }: { className?: string }) {
+  return (
+    <svg
+      width="250"
+      height="40"
+      viewBox="0 0 250 40"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("text-white", className)}
+    >
+      <defs>
+        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: "#F97316" }} />
+          <stop offset="100%" style={{ stopColor: "#FBBF24" }} />
+        </linearGradient>
+      </defs>
+      <g transform="translate(0, 6)">
+        <rect width="14" height="14" rx="3" fill="url(#logo-gradient)" />
+        <rect x="7" y="7" width="14" height="14" rx="3" fill="currentColor" />
+      </g>
+      <text
+        x="32"
+        y="30"
+        fontFamily="Poppins, sans-serif"
+        fontWeight="800"
+        fontSize="24"
+        fill="url(#logo-gradient)"
+      >
+        Product
+      </text>
+      <text
+        x="128"
+        y="30"
+        fontFamily="Poppins, sans-serif"
+        fontWeight="800"
+        fontSize="24"
+        fill="currentColor"
+      >
+        Builders
+      </text>
+    </svg>
+  );
+}
+```
+
+## Design Elements
+
+### Icon
+
+The logo icon consists of two overlapping rounded squares:
+- **Background square**: Orange to amber gradient (`#F97316` → `#FBBF24`)
+- **Foreground square**: Uses `currentColor` (adapts to text color)
+- **Border radius**: 3px for rounded corners
+- **Offset**: 7px to create overlap effect
+
+### Typography
+
+- **Font**: Poppins, 800 weight (extra bold)
+- **Size**: 24px
+- **"Product"**: Gradient fill matching the icon
+- **"Builders"**: `currentColor` for theme adaptation
+
+### Gradient Definition
+
+The `logo-gradient` is a left-to-right linear gradient:
+```xml
+<linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+  <stop offset="0%" style={{ stopColor: "#F97316" }} /> {/* Orange */}
+  <stop offset="100%" style={{ stopColor: "#FBBF24" }} /> {/* Amber */}
+</linearGradient>
+```
+
+## Dimensions
+
+Default size:
+- **Width**: 250px
+- **Height**: 40px
+- **Aspect ratio**: 6.25:1
+
+The SVG scales proportionally when you change width or height.
+
+## Customization Examples
+
+### Monochrome version
+
+Create a single-color logo by removing the gradient:
+
+```tsx
+export function LogoMono({ className }: { className?: string }) {
+  return (
+    <svg /* ... */ className={cn("text-gray-900", className)}>
+      {/* Remove gradient defs */}
+      <g transform="translate(0, 6)">
+        <rect width="14" height="14" rx="3" fill="currentColor" />
+        <rect x="7" y="7" width="14" height="14" rx="3" fill="currentColor" opacity="0.7" />
+      </g>
+      <text /* ... */ fill="currentColor">Product</text>
+      <text /* ... */ fill="currentColor">Builders</text>
+    </svg>
+  );
+}
+```
+
+### Vertical layout
+
+Stack "Product" and "Builders" vertically:
+
+```xml
+<text x="32" y="20" /* ... */>Product</text>
+<text x="32" y="45" /* ... */>Builders</text>
+```
+
+### Different colors
+
+Change the gradient colors:
+
+```xml
+<linearGradient id="logo-gradient">
+  <stop offset="0%" style={{ stopColor: "#0EA5E9" }} /> {/* Sky blue */}
+  <stop offset="100%" style={{ stopColor: "#06B6D4" }} /> {/* Cyan */}
+</linearGradient>
+```
+
+## Using as Image
+
+To export the logo as a static file:
+
+1. Copy the SVG markup
+2. Save as `public/logo.svg`
+3. Use with Next.js Image:
+
+```tsx
+import Image from "next/image";
+
+<Image src="/logo.svg" alt="Product Builders" width={250} height={40} />
+```
+
+## Accessibility
+
+When using the logo component, add appropriate alt text or ARIA labels:
+
+```tsx
+<div role="img" aria-label="Product Builders">
+  <Logo />
+</div>
+
+{/* Or as a link */}
+<Link href="/" aria-label="Product Builders Home">
+  <Logo />
+</Link>
+```
+
+## Font Loading
+
+The logo uses Poppins font. Ensure it's loaded in your app:
+
+```tsx app/layout.tsx
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  weight: ["400", "600", "800"],
+  subsets: ["latin"],
+});
+
+export default function RootLayout({ children }) {
+  return (
+    <html className={poppins.className}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Related
+
+<Card title="Header Component" href="/components/header">
+  See how the logo is used in the site header
+</Card>

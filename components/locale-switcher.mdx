@@ -1,0 +1,222 @@
+---
+title: Locale switcher
+description: Language switcher dropdown component for multi-language navigation
+---
+
+# Locale Switcher
+
+The `LocaleSwitcher` component provides a dropdown menu for users to switch between available languages. It displays a globe icon and creates language-specific URLs while preserving the current page path.
+
+## Overview
+
+This component:
+- Renders a dropdown with all configured locales
+- Preserves the current page path when switching languages
+- Uses shadcn/ui DropdownMenu for styling
+- Shows a globe icon button
+
+## Props
+
+This component does not accept any props. It reads the locale configuration from `@/i18n-config`.
+
+## Usage
+
+The locale switcher can be added to any page or component:
+
+```tsx
+import { LocaleSwitcher } from "@/components/locale-switcher";
+
+export function Header() {
+  return (
+    <header>
+      <nav>
+        {/* Navigation items */}
+        <LocaleSwitcher />
+      </nav>
+    </header>
+  );
+}
+```
+
+## Component Implementation
+
+From `src/components/locale-switcher.tsx`:
+
+```tsx
+"use client";
+
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { i18n } from "@/i18n-config";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
+
+export function LocaleSwitcher() {
+  const pathName = usePathname();
+
+  const redirectedPathName = (locale: string) => {
+    if (!pathName) return "/";
+    const segments = pathName.split("/");
+    segments[1] = locale;
+    return segments.join("/");
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Globe className="h-[1.2rem] w-[1.2rem]" />
+          <span className="sr-only">Change language</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {i18n.locales.map((locale) => (
+          <DropdownMenuItem key={locale} asChild>
+            <Link href={redirectedPathName(locale)}>
+              {locale.toUpperCase()}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## How It Works
+
+<Steps>
+  <Step title="Get current path">
+    Uses Next.js `usePathname()` hook to get the current page URL.
+  </Step>
+
+  <Step title="Generate locale URLs">
+    The `redirectedPathName` function replaces the locale segment (position 1) in the URL path while keeping the rest intact.
+
+    Example:
+    - Current: `/es/about`
+    - Switch to English: `/en/about`
+  </Step>
+
+  <Step title="Render dropdown">
+    Maps over `i18n.locales` array to create a menu item for each configured language.
+  </Step>
+
+  <Step title="Navigate">
+    Clicking a locale uses Next.js `<Link>` for client-side navigation to the new URL.
+  </Step>
+</Steps>
+
+## URL Path Handling
+
+The locale switcher intelligently handles different URL structures:
+
+```tsx
+// Home page
+"/es" → "/en"
+
+// Nested page
+"/es/about/team" → "/en/about/team"
+
+// No path
+null → "/"
+```
+
+## Styling
+
+The component uses shadcn/ui components:
+
+- **Button**: `variant="outline"` for the trigger button
+- **Icon size**: `size="icon"` for square button with centered icon
+- **Dropdown alignment**: `align="end"` to align right
+- **Globe icon**: From lucide-react at 1.2rem size
+
+## Customization
+
+### Change button style
+
+```tsx
+<Button variant="ghost" size="sm">
+  <Globe className="h-4 w-4 mr-2" />
+  Language
+</Button>
+```
+
+### Show language names
+
+```tsx
+const localeNames = {
+  en: "English",
+  es: "Español",
+  ru: "Русский",
+};
+
+{i18n.locales.map((locale) => (
+  <DropdownMenuItem key={locale} asChild>
+    <Link href={redirectedPathName(locale)}>
+      {localeNames[locale]}
+    </Link>
+  </DropdownMenuItem>
+))}
+```
+
+### Add flag icons
+
+Install flag icons and import them:
+
+```tsx
+import { ES, GB, RU } from 'country-flag-icons/react/3x2';
+
+const FlagIcon = ({ locale }: { locale: string }) => {
+  const flags = { en: GB, es: ES, ru: RU };
+  const Flag = flags[locale];
+  return Flag ? <Flag className="w-5 h-3 mr-2" /> : null;
+};
+
+// In the menu item
+<Link href={redirectedPathName(locale)}>
+  <FlagIcon locale={locale} />
+  {locale.toUpperCase()}
+</Link>
+```
+
+## Integration with i18n Config
+
+The component automatically updates when you add locales to `i18n-config.ts`:
+
+```typescript src/i18n-config.ts
+export const i18n = {
+  defaultLocale: "es",
+  locales: ["es", "en", "ru"], // Add "ru" and it appears in dropdown
+} as const;
+```
+
+## Accessibility
+
+- **Screen reader text**: `<span className="sr-only">Change language</span>` for icon button
+- **Keyboard navigation**: Fully keyboard accessible via shadcn/ui dropdown
+- **ARIA attributes**: Handled automatically by Radix UI primitives
+- **Focus management**: Dropdown closes on selection and returns focus to trigger
+
+## Client-side Only
+
+<Warning>
+  This component uses `"use client"` directive because it relies on `usePathname()` hook. It cannot be used in Server Components.
+</Warning>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Internationalization" href="/customization/internationalization">
+    Full i18n setup and configuration guide
+  </Card>
+  <Card title="Header Component" href="/components/header">
+    Where the locale switcher is typically placed
+  </Card>
+</CardGroup>

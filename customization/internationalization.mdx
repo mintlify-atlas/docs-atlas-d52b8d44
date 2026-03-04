@@ -3,7 +3,7 @@ title: Internationalization
 description: Learn how to add and manage multiple languages in your Product Builders Landing with the built-in i18n system.
 ---
 
-Product Builders Landing comes with a built-in internationalization (i18n) system supporting multiple languages. The template includes Spanish, English, and Russian translations out of the box.
+Product Builders Landing comes with a built-in internationalization (i18n) system supporting multiple languages. The template includes Spanish and English translations configured out of the box, with a Russian dictionary file available for activation.
 
 ## How It Works
 
@@ -34,15 +34,39 @@ export type Locale = (typeof i18n)["locales"][number];
 
 ## Dictionary Structure
 
-Translations are stored in `src/dictionaries/` as JSON files. Each locale has its own dictionary file:
+Translations are stored in `src/dictionaries/` as JSON files. The project includes:
 
-- `src/dictionaries/en.json` - English translations
-- `src/dictionaries/es.json` - Spanish translations
-- `src/dictionaries/ru.json` - Russian translations
+- `src/dictionaries/en.json` - English translations (configured)
+- `src/dictionaries/es.json` - Spanish translations (configured, default)
+- `src/dictionaries/ru.json` - Russian translations (available, not configured)
 
-### Dictionary Format
+<Note>
+  The Russian dictionary file exists but is not currently configured in `i18n-config.ts`. See [Adding a New Language](#adding-a-new-language) below to enable it.
+</Note>
+
+### Configured Dictionaries
+
+The following dictionaries are active in the i18n configuration:
 
 <Tabs>
+  <Tab title="Spanish (Default)">
+    ```json
+    {
+      "metadata": {
+        "title": "Product Builders",
+        "description": "Consultoría y mentorías para llevar tu producto digital al siguiente nivel."
+      },
+      "header": {
+        "contact": "Hablemos"
+      },
+      "hero": {
+        "title": "Construimos y escalamos productos digitales de alto impacto.",
+        "subtitle": "En Product Builders te ayudamos a transformar ideas en productos exitosos a través de consultoría estratégica y mentoría especializada.",
+        "button": "Ver servicios"
+      }
+    }
+    ```
+  </Tab>
   <Tab title="English">
     ```json
     {
@@ -65,62 +89,6 @@ Translations are stored in `src/dictionaries/` as JSON files. Each locale has it
           "strategy": {
             "title": "Strategic Product Consulting",
             "description": "We help you define the vision, strategy, and roadmap of your digital product to maximize its market impact."
-          }
-        }
-      }
-    }
-    ```
-  </Tab>
-  <Tab title="Spanish">
-    ```json
-    {
-      "metadata": {
-        "title": "Product Builders",
-        "description": "Consultoría y mentorías para llevar tu producto digital al siguiente nivel."
-      },
-      "header": {
-        "contact": "Hablemos"
-      },
-      "hero": {
-        "title": "Construimos y escalamos productos digitales de alto impacto.",
-        "subtitle": "En Product Builders te ayudamos a transformar ideas en productos exitosos a través de consultoría estratégica y mentoría especializada.",
-        "button": "Ver servicios"
-      },
-      "services": {
-        "title": "Qué hacemos",
-        "subtitle": "Nuestra misión es potenciar a equipos y productos para que alcancen su máximo potencial.",
-        "items": {
-          "strategy": {
-            "title": "Consultoría estratégica de producto",
-            "description": "Te ayudamos a definir la visión, estrategia y roadmap de tu producto digital para maximizar su impacto en el mercado."
-          }
-        }
-      }
-    }
-    ```
-  </Tab>
-  <Tab title="Russian">
-    ```json
-    {
-      "metadata": {
-        "title": "Product Builders",
-        "description": "Консультации и наставничество, чтобы вывести ваш цифровой продукт на новый уровень."
-      },
-      "header": {
-        "contact": "Поговорим"
-      },
-      "hero": {
-        "title": "Мы создаем и масштабируем цифровые продукты с высокой отдачей.",
-        "subtitle": "В Product Builders мы помогаем вам превращать идеи в успешные продукты с помощью стратегического консалтинга и специализированного наставничества.",
-        "button": "Посмотреть услуги"
-      },
-      "services": {
-        "title": "Что мы делаем",
-        "subtitle": "Наша миссия - дать возможность командам и продуктам полностью раскрыть свой потенциал.",
-        "items": {
-          "strategy": {
-            "title": "Стратегический консалтинг по продуктам",
-            "description": "Мы помогаем вам определить видение, стратегию и дорожную карту вашего цифрового продукта, чтобы максимизировать его влияние на рынок."
           }
         }
       }
@@ -246,7 +214,42 @@ export function LocaleSwitcher() {
 }
 ```
 
+## Enabling Russian
+
+The project includes a complete Russian dictionary (`src/dictionaries/ru.json`) that is not currently enabled. To activate it:
+
+<Steps>
+  <Step title="Update i18n configuration">
+    Add `"ru"` to the locales array in `src/i18n-config.ts`:
+
+    ```typescript
+    export const i18n = {
+      defaultLocale: "es",
+      locales: ["es", "en", "ru"], // Added "ru"
+    } as const;
+    ```
+  </Step>
+
+  <Step title="Update dictionary loader">
+    Add the Russian import in `src/lib/dictionaries.ts`:
+
+    ```typescript
+    const dictionaries = {
+      en: () => import("@/dictionaries/en.json").then((module) => module.default),
+      es: () => import("@/dictionaries/es.json").then((module) => module.default),
+      ru: () => import("@/dictionaries/ru.json").then((module) => module.default),
+    };
+    ```
+  </Step>
+
+  <Step title="Test Russian locale">
+    Navigate to `/ru` to see the Russian version of your landing page.
+  </Step>
+</Steps>
+
 ## Adding a New Language
+
+To add a language that doesn't have a dictionary file yet:
 
 ### Step 1: Create Dictionary File
 
@@ -302,8 +305,7 @@ The i18n system uses locale-prefixed URLs:
 
 - `/es` - Spanish (default)
 - `/en` - English
-- `/ru` - Russian
-- `/fr/about` - French about page
+- `/fr` - Example for adding French (not configured by default)
 
 ## Static Generation
 

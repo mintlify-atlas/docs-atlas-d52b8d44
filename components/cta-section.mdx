@@ -1,0 +1,153 @@
+---
+title: CTA section
+description: Call-to-action section component with gradient background and embedded contact form
+---
+
+# CTA Section
+
+The `CtaSection` component creates a compelling call-to-action area that encourages visitors to get in touch. It features a gradient background, persuasive copy, and an embedded contact form.
+
+## Overview
+
+This component wraps the `ContactForm` in an eye-catching section with:
+- Gradient background (sky-500 to cyan-500)
+- Two-column layout (text + form)
+- Responsive design that stacks on mobile
+- White text on colored background
+
+## Props
+
+<ParamField path="offerings" type="Array<{id: string, title: string}>" required>
+  Array of offering objects to populate the service dropdown in the contact form. Each offering needs:
+  - `id` - Unique identifier
+  - `title` - Display name for the service
+</ParamField>
+
+## Usage
+
+The component is used on the main landing page at `src/app/page.tsx:60`:
+
+```tsx src/app/page.tsx
+import { CtaSection } from "@/components/cta-section";
+import { offeringsMeta } from "@/lib/data";
+
+const offeringsContent = {
+  items: {
+    intensive: {
+      title: "Intensivo de producto digital",
+      description: "Consultoría de 4 semanas...",
+      duration: "4 Semanas",
+    },
+    // ... more offerings
+  },
+};
+
+export default function Home() {
+  const offerings = offeringsMeta.map((offering) => ({
+    ...offering,
+    ...offeringsContent.items[offering.id],
+  }));
+
+  return (
+    <div>
+      {/* Other sections */}
+      <CtaSection offerings={offerings} />
+    </div>
+  );
+}
+```
+
+## Component Structure
+
+The component from `src/components/cta-section.tsx` contains:
+
+```tsx
+export function CtaSection({
+  offerings,
+}: {
+  offerings: { id: string; title: string }[];
+}) {
+  return (
+    <section
+      id="contact"
+      className="w-full bg-gradient-to-r from-sky-500 to-cyan-500 py-20 text-white md:py-32"
+    >
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <div className="space-y-4">
+            <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
+              {ctaContent.title}
+            </h2>
+            <p className="text-lg text-gray-200">{ctaContent.subtitle}</p>
+          </div>
+          <div className="w-full">
+            <ContactForm offerings={offerings} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+```
+
+## Content Customization
+
+The section text is defined within the component:
+
+```tsx
+const ctaContent = {
+  title: "¿Listo para llevar tu producto al siguiente nivel?",
+  subtitle: "Completa el formulario y nos pondremos en contacto para explorar cómo podemos ayudarte a alcanzar tus objetivos.",
+};
+```
+
+To customize:
+1. Edit the `ctaContent` object in `src/components/cta-section.tsx`
+2. Or move this content to a translation dictionary for i18n support
+
+## Styling
+
+### Gradient Background
+
+The section uses Tailwind's gradient utilities:
+- `bg-gradient-to-r` - Left to right gradient
+- `from-sky-500` - Start color
+- `to-cyan-500` - End color
+
+### Layout
+
+- **Desktop**: Two-column grid (`md:grid-cols-2`)
+- **Mobile**: Stacked single column
+- **Spacing**: 12-unit gap between columns
+
+### Typography
+
+- Headline: 3xl on mobile, 4xl on desktop
+- Subtitle: lg text with gray-200 for contrast
+- Font: Poppins headline font (configured in theme)
+
+## Anchor Link
+
+The section has `id="contact"` to enable anchor navigation. Other components can link to it:
+
+```tsx
+<Link href="#contact">Contact Us</Link>
+```
+
+## Related Components
+
+<CardGroup cols={2}>
+  <Card title="Contact Form" href="/components/contact-form">
+    The form component embedded in this section
+  </Card>
+  <Card title="Offerings Section" href="/components/offerings-section">
+    Displays the offerings that feed into the CTA form
+  </Card>
+</CardGroup>
+
+## Accessibility
+
+- Semantic HTML with `<section>` element
+- Proper heading hierarchy (h2)
+- High contrast text on gradient background
+- Responsive layout works with screen readers
