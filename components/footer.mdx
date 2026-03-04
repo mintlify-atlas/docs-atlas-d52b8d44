@@ -1,0 +1,164 @@
+---
+title: "Footer"
+description: "Site footer with logo, copyright notice, and social media links"
+---
+
+## Overview
+
+The `Footer` component provides the bottom section of the Product Builders landing page. It features a vibrant gradient background, the company logo, copyright notice with dynamic year, and social media links to LinkedIn and Behance.
+
+The footer uses a responsive layout that stacks vertically on mobile and displays horizontally on desktop.
+
+## Component Structure
+
+```tsx
+export function Footer() {
+  const currentYear = new Date().getFullYear();
+  return (
+    <footer className="w-full bg-gradient-to-r from-sky-500 to-cyan-500 py-6 text-white">
+      <div className="container mx-auto flex flex-col items-center justify-between px-4 text-center md:flex-row md:px-6">
+        <Logo />
+        <p className="mt-4 text-sm text-gray-200 md:mt-0">
+          &copy; {currentYear} Product Builders. Todos los derechos reservados.
+        </p>
+        <div className="mt-4 flex items-center gap-x-4 md:mt-0">
+          {/* Social links */}
+        </div>
+      </div>
+    </footer>
+  );
+}
+```
+
+## Usage Example
+
+From `src/app/page.tsx:63`:
+
+```tsx
+import { Footer } from "@/components/footer";
+
+export default function Home() {
+  return (
+    <div className="flex min-h-dvh flex-col bg-gray-50/50">
+      <Header />
+      <main className="flex-1">
+        {/* Page content */}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Features
+
+- **Gradient Background**: Eye-catching sky-to-cyan gradient (`bg-gradient-to-r from-sky-500 to-cyan-500`)
+- **Dynamic Copyright Year**: Automatically displays the current year
+- **Responsive Layout**: Vertical stack on mobile, horizontal on desktop
+- **Social Media Links**: LinkedIn and Behance icons with hover effects
+- **Accessibility**: Includes screen reader labels and aria-labels
+
+## Social Media Links
+
+The footer includes two social media links:
+
+### LinkedIn
+
+```tsx
+<Link
+  href="https://www.linkedin.com/in/ajsantana/"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="LinkedIn"
+>
+  <Linkedin className="h-6 w-6 text-gray-200 transition-colors hover:text-white" />
+  <span className="sr-only">LinkedIn</span>
+</Link>
+```
+
+Links to: `https://www.linkedin.com/in/ajsantana/`
+
+### Behance
+
+```tsx
+<Link
+  href="https://www.behance.net/alvaprog"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Behance"
+>
+  <BehanceIcon className="h-6 w-6 text-gray-200 transition-colors hover:text-white" />
+  <span className="sr-only">Behance</span>
+</Link>
+```
+
+Links to: `https://www.behance.net/alvaprog`
+
+## BehanceIcon Component
+
+The footer includes a custom SVG icon for Behance:
+
+```tsx
+function BehanceIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M7.456 14.153h3.774c.057-.597.113-1.25.113-1.846..." />
+    </svg>
+  );
+}
+```
+
+This custom icon accepts all standard SVG props and uses `currentColor` for the fill, allowing it to inherit text color.
+
+## Customization
+
+### Adding More Social Links
+
+To add additional social media links, extend the social links container:
+
+```tsx
+<div className="mt-4 flex items-center gap-x-4 md:mt-0">
+  <Link href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+    <TwitterIcon className="h-6 w-6 text-gray-200 transition-colors hover:text-white" />
+    <span className="sr-only">Twitter</span>
+  </Link>
+  {/* Existing LinkedIn and Behance links */}
+</div>
+```
+
+### Changing the Copyright Text
+
+The copyright notice is on line 24-26:
+
+```tsx
+<p className="mt-4 text-sm text-gray-200 md:mt-0">
+  &copy; {currentYear} Product Builders. Todos los derechos reservados.
+</p>
+```
+
+### Modifying the Gradient
+
+To change the gradient colors, modify the `bg-gradient-to-r` classes:
+
+```tsx
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 py-6 text-white"
+```
+
+## Styling
+
+- **Background**: Sky to cyan gradient for brand identity
+- **Text Color**: White text with gray-200 for secondary text
+- **Icon Sizing**: 6x6 (24px) for social icons
+- **Spacing**: `gap-x-4` between social icons, `py-6` vertical padding
+- **Responsive Margins**: `mt-4 md:mt-0` to remove top margin on desktop
+- **Hover Effects**: Icons transition from gray-200 to white on hover
+- **Layout**: Flexbox with `justify-between` for even distribution on desktop

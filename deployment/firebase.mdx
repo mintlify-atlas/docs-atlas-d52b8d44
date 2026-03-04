@@ -1,0 +1,133 @@
+---
+title: Firebase App Hosting
+description: Deploy your Product Builders landing page to Firebase App Hosting with automatic scaling and CI/CD integration
+---
+
+Firebase App Hosting provides a fully managed hosting solution for Next.js applications with automatic scaling, global CDN, and seamless integration with Firebase services.
+
+## Prerequisites
+
+Before deploying to Firebase App Hosting, ensure you have:
+
+- A Firebase project created in the [Firebase Console](https://console.firebase.google.com/)
+- Firebase CLI installed (`npm install -g firebase-tools`)
+- Your [environment variables](/deployment/environment-variables) configured
+
+## Configuration
+
+The project includes an `apphosting.yaml` configuration file that manages the Firebase App Hosting backend:
+
+```yaml
+runConfig:
+  # Increase this value if you'd like to automatically spin up
+  # more instances in response to increased traffic.
+  maxInstances: 1
+```
+
+### Scaling Configuration
+
+The `maxInstances` setting controls how many server instances Firebase will automatically spin up in response to traffic:
+
+- **Development**: Keep at `1` to minimize costs
+- **Production**: Increase based on expected traffic (e.g., `10`, `25`, `100`)
+
+<Warning>
+Increasing `maxInstances` will affect your Firebase billing. Monitor your usage in the Firebase Console to avoid unexpected charges.
+</Warning>
+
+## Deployment Steps
+
+<Steps>
+  <Step title="Install Firebase CLI">
+    Install the Firebase CLI globally if you haven't already:
+    
+    ```bash
+    npm install -g firebase-tools
+    ```
+  </Step>
+
+  <Step title="Login to Firebase">
+    Authenticate with your Firebase account:
+    
+    ```bash
+    firebase login
+    ```
+  </Step>
+
+  <Step title="Initialize Firebase App Hosting">
+    Initialize App Hosting in your project:
+    
+    ```bash
+    firebase init apphosting
+    ```
+    
+    Select your Firebase project and follow the prompts.
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Set your environment variables in the Firebase Console:
+    
+    1. Navigate to your project in the [Firebase Console](https://console.firebase.google.com/)
+    2. Go to **App Hosting** > **Settings**
+    3. Add your `RESEND_API_KEY` in the environment variables section
+    
+    See the [Environment Variables](/deployment/environment-variables) guide for details.
+  </Step>
+
+  <Step title="Deploy">
+    Deploy your application:
+    
+    ```bash
+    firebase deploy --only apphosting
+    ```
+    
+    Firebase will build and deploy your application automatically.
+  </Step>
+</Steps>
+
+## Continuous Deployment
+
+Firebase App Hosting supports automatic deployments from your Git repository:
+
+1. In the Firebase Console, navigate to **App Hosting**
+2. Click **Connect to GitHub** (or your preferred Git provider)
+3. Select your repository and branch
+4. Firebase will automatically deploy on every push to the selected branch
+
+<Warning>
+Ensure all environment variables are configured in the Firebase Console before enabling automatic deployments.
+</Warning>
+
+## Monitoring and Logs
+
+View your application logs and performance metrics:
+
+```bash
+firebase apphosting:logs
+```
+
+Or monitor in real-time through the Firebase Console under **App Hosting** > **Logs**.
+
+## Troubleshooting
+
+### Build Failures
+
+If your deployment fails during the build step:
+
+1. Check the build logs: `firebase apphosting:logs`
+2. Verify all dependencies are listed in `package.json`
+3. Ensure environment variables are properly configured
+
+### Instance Scaling Issues
+
+If you experience performance issues:
+
+1. Increase `maxInstances` in `apphosting.yaml`
+2. Monitor usage in the Firebase Console
+3. Consider upgrading your Firebase plan if needed
+
+## Resources
+
+- [Firebase App Hosting Documentation](https://firebase.google.com/docs/app-hosting)
+- [Next.js on Firebase](https://firebase.google.com/docs/app-hosting/nextjs)
+- [Environment Variables Guide](/deployment/environment-variables)

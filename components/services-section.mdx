@@ -1,0 +1,118 @@
+---
+title: "ServicesSection"
+description: "Displays the three main service offerings in a card grid layout"
+---
+
+## Overview
+
+The `ServicesSection` component displays the three core services offered by Product Builders: strategic consulting, personalized mentorship, and product optimization. Each service is presented in a card with an icon, title, and description.
+
+This component fetches service metadata (including icons) from `@/lib/data` and merges it with localized content defined within the component.
+
+## Component Structure
+
+```tsx
+export function ServicesSection() {
+  const services = servicesMeta.map((service) => ({
+    ...service,
+    ...servicesContent.items[service.id],
+  }));
+
+  return (
+    <section id="services" className="w-full bg-white py-20 md:py-32">
+      {/* Component content */}
+    </section>
+  );
+}
+```
+
+## Usage Example
+
+From `src/app/page.tsx:53-55`:
+
+```tsx
+import { ServicesSection } from "@/components/services-section";
+import { ScrollAnimation } from "@/components/scroll-animation";
+
+export default function Home() {
+  return (
+    <main className="flex-1">
+      <HeroSection />
+      <ScrollAnimation>
+        <ServicesSection />
+      </ScrollAnimation>
+    </main>
+  );
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Service Data Structure
+
+The component uses two data sources:
+
+1. **servicesMeta** from `@/lib/data.ts` - provides the icon and id
+2. **servicesContent** (internal) - provides title and description
+
+The merged service object structure:
+
+```typescript
+{
+  id: 'strategy' | 'mentorship' | 'optimization';
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+```
+
+## Services Displayed
+
+<ParamField path="strategy" type="service">
+  **Consultoría estratégica de producto** - Helps define product vision, strategy, and roadmap to maximize market impact. Uses the Presentation icon.
+</ParamField>
+
+<ParamField path="mentorship" type="service">
+  **Mentoría personalizada para product managers** - 1-on-1 mentorship focused on developing key product management, design, and leadership skills. Uses the GraduationCap icon.
+</ParamField>
+
+<ParamField path="optimization" type="service">
+  **Optimización de productos existentes** - Analyzes and improves digital products using agile methodologies, research, and data analysis. Uses the TrendingUp icon.
+</ParamField>
+
+## Features
+
+- **Three-Column Grid**: Responsive grid layout (`grid-cols-1 md:grid-cols-3`)
+- **Card Hover Effects**: Cards lift up on hover with shadow enhancement
+- **Icon Integration**: Each service has a circular icon background with primary color
+- **Centered Layout**: Section title and subtitle are centered above the cards
+
+## Customization
+
+To modify service content, edit the `servicesContent` object (lines 9-30):
+
+```tsx
+const servicesContent = {
+  title: "Qué hacemos",
+  subtitle: "Nuestra misión es potenciar a equipos...",
+  items: {
+    strategy: {
+      title: "Your custom title",
+      description: "Your custom description",
+    },
+    // ...
+  },
+};
+```
+
+To modify service icons, edit `servicesMeta` in `@/lib/data.ts`.
+
+## Styling
+
+The component uses:
+- White background (`bg-white`)
+- Large vertical padding (`py-20 md:py-32`)
+- Card hover animation: `-translate-y-2` with shadow transition
+- Primary color accent for icon backgrounds (`bg-primary/10`)

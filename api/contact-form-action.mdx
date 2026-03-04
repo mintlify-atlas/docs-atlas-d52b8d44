@@ -1,0 +1,137 @@
+---
+title: submitContactForm
+description: Server action for handling contact form submissions with email validation and delivery
+---
+
+## submitContactForm
+
+A Next.js server action that validates and processes contact form submissions, sending emails via the Resend API.
+
+### Parameters
+
+<ParamField path="prevState" type="FormState" required>
+  The previous form state from React's `useFormState` hook.
+  
+  ```typescript
+  type FormState = {
+    message: string;
+    success: boolean;
+  }
+  ```
+</ParamField>
+
+<ParamField path="formData" type="FormData" required>
+  The form data containing the contact information.
+  
+  **Expected fields:**
+  - `email` (string): User's email address (must be valid email format)
+  - `service` (string): Selected service (minimum 1 character)
+  - `message` (string): Contact message (minimum 10 characters)
+</ParamField>
+
+### Returns
+
+<ResponseField name="FormState" type="object">
+  Returns a promise that resolves to a FormState object.
+  
+  <ResponseField name="message" type="string">
+    A user-friendly message describing the result of the submission.
+  </ResponseField>
+  
+  <ResponseField name="success" type="boolean">
+    Indicates whether the form submission was successful.
+  </ResponseField>
+</ResponseField>
+
+### Type Definition
+
+```typescript src/app/actions.ts
+export type FormState = {
+  message: string;
+  success: boolean;
+};
+
+export async function submitContactForm(
+  prevState: FormState,
+  formData: FormData
+): Promise<FormState>
+```
+
+### Validation Schema
+
+The function uses Zod for validation with the following schema:
+
+```typescript src/app/actions.ts
+const contactSchema = z.object({
+  email: z.string().email(),
+  service: z.string().min(1),
+  message: z.string().min(10),
+});
+```
+
+### Usage Example
+
+```typescript
+import { submitContactForm } from '@/app/actions';
+import { useFormState } from 'react-dom';
+
+function ContactForm() {
+  const initialState: FormState = {
+    message: '',
+    success: false,
+  };
+  
+  const [state, formAction] = useFormState(submitContactForm, initialState);
+  
+  return (
+    <form action={formAction}>
+      <input type="email" name="email" required />
+      <select name="service" required>
+        <option value="strategy">Strategy</option>
+        <option value="mentorship">Mentorship</option>
+        <option value="optimization">Optimization</option>
+      </select>
+      <textarea name="message" minLength={10} required />
+      <button type="submit">Submit</button>
+      
+      {state.message && (
+        <p className={state.success ? 'text-green-600' : 'text-red-600'}>
+          {state.message}
+        </p>
+      )}
+    </form>
+  );
+}
+```
+
+### Error Handling
+
+The function returns different error messages for various failure scenarios:
+
+- **Invalid email**: "Por favor, introduce un email válido."
+- **Missing service**: "Por favor, selecciona un servicio."
+- **Message too short**: "El mensaje debe tener al menos 10 caracteres."
+- **Validation error**: "Error de validación."
+- **Configuration error**: Missing or invalid RESEND_API_KEY
+- **API error**: "Ocurrió un error inesperado al enviar el formulario."
+
+### Environment Variables
+
+<ParamField path="RESEND_API_KEY" type="string" required>
+  Resend API key for sending emails. Must start with `re_`.
+</ParamField>
+
+### Success Response
+
+On successful submission:
+
+```typescript
+{
+  message: "¡Gracias! Nos pondremos en contacto contigo pronto.",
+  success: true
+}
+```
+
+### Source Code
+
+See the full implementation at `src/app/actions.ts:29-105`

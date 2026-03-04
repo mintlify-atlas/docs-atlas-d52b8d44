@@ -1,0 +1,234 @@
+---
+title: Theming
+description: Customize the visual appearance of your Product Builders Landing with Tailwind CSS theming, color schemes, and typography.
+---
+
+Product Builders Landing uses Tailwind CSS with CSS variables for theming, providing a flexible and maintainable approach to customization. The theme supports both light and dark modes out of the box.
+
+## Color System
+
+The color system is built on HSL color values using CSS custom properties, allowing for easy theme customization without modifying component code.
+
+### CSS Variables
+
+Colors are defined in `src/app/globals.css` using CSS custom properties:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10%;
+  --primary: 212 88% 53%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --accent: 188 95% 43%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 212 88% 53%;
+  --radius: 0.5rem;
+}
+```
+
+### Dark Mode
+
+Dark mode colors are defined using the `.dark` class:
+
+```css
+.dark {
+  --background: 0 0% 10%;
+  --foreground: 0 0% 98%;
+  --primary: 212 88% 53%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 98%;
+  /* ... additional dark mode colors */
+}
+```
+
+The theme uses class-based dark mode toggling configured in `tailwind.config.ts`:
+
+```typescript
+export default {
+  darkMode: ['class'],
+  // ...
+} satisfies Config;
+```
+
+### Tailwind Color Configuration
+
+Colors are mapped to Tailwind utilities in `tailwind.config.ts`:
+
+```typescript
+colors: {
+  background: 'hsl(var(--background))',
+  foreground: 'hsl(var(--foreground))',
+  card: {
+    DEFAULT: 'hsl(var(--card))',
+    foreground: 'hsl(var(--card-foreground))',
+  },
+  primary: {
+    DEFAULT: 'hsl(var(--primary))',
+    foreground: 'hsl(var(--primary-foreground))',
+  },
+  secondary: {
+    DEFAULT: 'hsl(var(--secondary))',
+    foreground: 'hsl(var(--secondary-foreground))',
+  },
+  accent: {
+    DEFAULT: 'hsl(var(--accent))',
+    foreground: 'hsl(var(--accent-foreground))',
+  },
+  // ...
+}
+```
+
+## Typography
+
+### Font Families
+
+The template uses Poppins as the primary font, configured in `tailwind.config.ts`:
+
+```typescript
+fontFamily: {
+  body: ['Poppins', 'sans-serif'],
+  headline: ['Poppins', 'sans-serif'],
+  code: ['monospace'],
+}
+```
+
+### Font Loading
+
+Fonts are loaded via Google Fonts in `src/app/[lang]/layout.tsx`:
+
+```tsx
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossOrigin="anonymous"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+</head>
+```
+
+### Customizing Fonts
+
+To change the font family:
+
+1. Update the Google Fonts link in `src/app/[lang]/layout.tsx`
+2. Modify the `fontFamily` configuration in `tailwind.config.ts`
+3. Update the global CSS in `src/app/globals.css` if needed
+
+## Border Radius
+
+Border radius values are calculated based on a CSS variable:
+
+```typescript
+borderRadius: {
+  lg: 'var(--radius)',
+  md: 'calc(var(--radius) - 2px)',
+  sm: 'calc(var(--radius) - 4px)',
+}
+```
+
+The base radius is defined in `globals.css`:
+
+```css
+:root {
+  --radius: 0.5rem;
+}
+```
+
+## Animations
+
+The theme includes custom animations for accordions and other interactive components:
+
+```typescript
+keyframes: {
+  'accordion-down': {
+    from: { height: '0' },
+    to: { height: 'var(--radix-accordion-content-height)' },
+  },
+  'accordion-up': {
+    from: { height: 'var(--radix-accordion-content-height)' },
+    to: { height: '0' },
+  },
+},
+animation: {
+  'accordion-down': 'accordion-down 0.2s ease-out',
+  'accordion-up': 'accordion-up 0.2s ease-out',
+}
+```
+
+## Customizing the Theme
+
+### Changing Colors
+
+To customize the color scheme:
+
+1. Open `src/app/globals.css`
+2. Modify the CSS variables in the `:root` selector for light mode
+3. Modify the CSS variables in the `.dark` selector for dark mode
+4. Use HSL format: `hue saturation lightness` (e.g., `212 88% 53%`)
+
+### Example: Custom Primary Color
+
+```css
+:root {
+  --primary: 260 75% 60%; /* Purple */
+  --primary-foreground: 0 0% 100%;
+}
+
+.dark {
+  --primary: 260 75% 60%;
+  --primary-foreground: 0 0% 100%;
+}
+```
+
+### Adding Custom Colors
+
+1. Add CSS variable in `src/app/globals.css`:
+
+```css
+:root {
+  --custom: 120 60% 50%;
+  --custom-foreground: 0 0% 100%;
+}
+```
+
+2. Map it in `tailwind.config.ts`:
+
+```typescript
+colors: {
+  custom: {
+    DEFAULT: 'hsl(var(--custom))',
+    foreground: 'hsl(var(--custom-foreground))',
+  },
+}
+```
+
+3. Use in components:
+
+```tsx
+<div className="bg-custom text-custom-foreground">
+  Custom colored element
+</div>
+```
+
+## Plugins
+
+The configuration uses the `tailwindcss-animate` plugin for animation utilities:
+
+```typescript
+plugins: [require('tailwindcss-animate')]
+```
+
+This plugin provides additional animation utilities used throughout the components.

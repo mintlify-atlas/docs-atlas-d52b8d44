@@ -1,0 +1,132 @@
+---
+title: "OfferingsSection"
+description: "Displays available mentorship and consulting programs in a card grid with CTAs"
+---
+
+## Overview
+
+The `OfferingsSection` component displays the available mentorship and consulting programs offered by Product Builders. Each offering is shown in a card with a title, description, duration badge, and a "More Information" button that links to the contact form.
+
+Unlike the ServicesSection, this component accepts offerings data as a prop, allowing for dynamic content.
+
+## Component Structure
+
+```tsx
+export function OfferingsSection({
+  offerings,
+}: {
+  offerings: {
+    id: string;
+    title: string;
+    description: string;
+    duration: string;
+  }[];
+}) {
+  return (
+    <section id="offerings" className="w-full py-20 md:py-32">
+      {/* Component content */}
+    </section>
+  );
+}
+```
+
+## Usage Example
+
+From `src/app/page.tsx:10-46,56-58`:
+
+```tsx
+import { OfferingsSection } from "@/components/offerings-section";
+import { offeringsMeta } from "@/lib/data";
+
+const offeringsContent = {
+  items: {
+    intensive: {
+      title: "Intensivo de producto digital",
+      description: "Consultoría de 4 semanas para definir la estrategia de producto.",
+      duration: "4 Semanas",
+    },
+    accelerator: {
+      title: "Acelerador de carrera",
+      description: "Mentoría mensual para Product managers y Product designers.",
+      duration: "Mensual",
+    },
+    // ... more offerings
+  },
+};
+
+export default function Home() {
+  const offerings = offeringsMeta.map((offering) => ({
+    ...offering,
+    ...offeringsContent.items[offering.id],
+  }));
+
+  return (
+    <main>
+      <ScrollAnimation>
+        <OfferingsSection offerings={offerings} />
+      </ScrollAnimation>
+    </main>
+  );
+}
+```
+
+## Props
+
+<ParamField path="offerings" type="array" required>
+  Array of offering objects to display in the section.
+  
+  <ParamField path="offerings[].id" type="string" required>
+    Unique identifier for the offering (used as React key)
+  </ParamField>
+  
+  <ParamField path="offerings[].title" type="string" required>
+    The offering title displayed in the card header
+  </ParamField>
+  
+  <ParamField path="offerings[].description" type="string" required>
+    Description text explaining what the offering provides
+  </ParamField>
+  
+  <ParamField path="offerings[].duration" type="string" required>
+    Duration badge text (e.g., "4 Semanas", "Mensual", "Trimestral")
+  </ParamField>
+</ParamField>
+
+## Offerings Displayed
+
+The landing page includes five offerings:
+
+1. **Intensivo de producto digital** - 4-week consulting program to define product strategy
+2. **Acelerador de carrera** - Monthly mentorship for Product Managers and Product Designers
+3. **Product discovery sprint** - 2-week workshop to validate ideas
+4. **Scale-up Auditoria de producto** - Deep analysis of existing products for scaling
+5. **Leadership Mentorship** - Quarterly mentorship for product leaders
+
+## Features
+
+- **Responsive Grid**: 1 column on mobile, 2 on tablet, 3 on desktop (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
+- **Card Layout**: Each offering uses shadcn/ui Card components with header, content, and footer
+- **Duration Badge**: Primary-colored duration text in the card content
+- **CTA Button**: Secondary variant button linking to the contact form
+- **Hover Effects**: Subtle shadow enhancement on hover
+
+## Customization
+
+The section title and subtitle are defined in the internal `offeringsContent` object (lines 12-16):
+
+```tsx
+const offeringsContent = {
+  title: "Mentorías y consultorías disponibles",
+  subtitle: "Programas diseñados para acelerar tu crecimiento y el de tu producto.",
+  button: "Más información",
+};
+```
+
+To customize the button text or section headings, modify these values in the component file.
+
+## Styling
+
+- Light gray background (inherits from parent, not explicitly set)
+- Cards use `justify-between` flex layout to keep buttons aligned at the bottom
+- Duration text uses primary color (`text-primary`) with semibold weight
+- Buttons are full width (`w-full`) with secondary variant styling

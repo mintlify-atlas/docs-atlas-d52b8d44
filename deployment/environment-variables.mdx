@@ -1,0 +1,232 @@
+---
+title: Environment Variables
+description: Configure required environment variables for the Product Builders landing page contact form and email functionality
+---
+
+Environment variables store sensitive configuration data that your application needs to function properly. This guide covers all required environment variables for the Product Builders landing page.
+
+## Required Variables
+
+### RESEND_API_KEY
+
+The Resend API key is required for the contact form to send emails.
+
+**Purpose**: Authenticates your application with the Resend email service to send contact form submissions.
+
+**Format**: Must start with `re_` followed by your unique API key.
+
+**Example**: `re_123456789abcdefghijklmnop`
+
+<Warning>
+The contact form will not function without a valid Resend API key. Users will see an error message if this variable is missing or invalid.
+</Warning>
+
+## Getting Your Resend API Key
+
+<Steps>
+  <Step title="Create a Resend Account">
+    Sign up for a free account at [resend.com](https://resend.com/signup).
+  </Step>
+
+  <Step title="Verify Your Domain">
+    To send emails from your own domain:
+    
+    1. Go to **Domains** in the Resend dashboard
+    2. Click **Add Domain**
+    3. Follow the DNS configuration instructions
+    4. Wait for verification (usually a few minutes)
+    
+    Or use the default `onboarding@resend.dev` for testing (already configured in the code).
+  </Step>
+
+  <Step title="Generate API Key">
+    1. Navigate to **API Keys** in the Resend dashboard
+    2. Click **Create API Key**
+    3. Give it a descriptive name (e.g., "Product Builders Production")
+    4. Select appropriate permissions ("Sending access" is sufficient)
+    5. Copy the generated API key
+  </Step>
+
+  <Step title="Store Securely">
+    Never commit your API key to version control. Use your deployment platform's environment variable management.
+  </Step>
+</Steps>
+
+## Local Development
+
+For local development, create a `.env.local` file in your project root:
+
+```bash
+RESEND_API_KEY=re_your_api_key_here
+```
+
+<Warning>
+Add `.env.local` to your `.gitignore` file to prevent accidentally committing your API keys to version control.
+</Warning>
+
+### Example .env.local
+
+```bash
+# Resend API Key for email functionality
+RESEND_API_KEY=re_123456789abcdefghijklmnop
+```
+
+## Production Deployment
+
+Configure environment variables in your deployment platform:
+
+### Firebase App Hosting
+
+<Steps>
+  <Step title="Open Firebase Console">
+    Navigate to your project in the [Firebase Console](https://console.firebase.google.com/).
+  </Step>
+
+  <Step title="Go to App Hosting Settings">
+    Click **App Hosting** in the sidebar, then go to **Settings**.
+  </Step>
+
+  <Step title="Add Environment Variable">
+    1. Scroll to **Environment variables**
+    2. Click **Add variable**
+    3. Name: `RESEND_API_KEY`
+    4. Value: Your Resend API key (starting with `re_`)
+    5. Click **Save**
+  </Step>
+
+  <Step title="Redeploy">
+    Trigger a new deployment for changes to take effect:
+    
+    ```bash
+    firebase deploy --only apphosting
+    ```
+  </Step>
+</Steps>
+
+### Netlify
+
+<Steps>
+  <Step title="Open Site Settings">
+    In your Netlify dashboard, select your site and go to **Site settings**.
+  </Step>
+
+  <Step title="Navigate to Environment Variables">
+    Click **Environment variables** in the left sidebar.
+  </Step>
+
+  <Step title="Add Variable">
+    1. Click **Add a variable**
+    2. Key: `RESEND_API_KEY`
+    3. Value: Your Resend API key (starting with `re_`)
+    4. Select scope: **Production** (and **Deploy previews** if desired)
+    5. Click **Create variable**
+  </Step>
+
+  <Step title="Trigger New Deploy">
+    Go to **Deploys** > **Trigger deploy** > **Deploy site** to apply the new variable.
+  </Step>
+</Steps>
+
+## Validation
+
+The application validates the `RESEND_API_KEY` in `src/app/actions.ts`:
+
+```typescript
+const resendApiKey = process.env.RESEND_API_KEY;
+
+if (!resendApiKey) {
+  console.error("Resend API key is not configured.");
+  return {
+    message: toastTexts.defaultError,
+    success: false,
+  };
+}
+
+if (!resendApiKey.startsWith("re_")) {
+  return {
+    message:
+      "Configuration error: The Resend API key is invalid. It must start with 're_'.",
+    success: false,
+  };
+}
+```
+
+### Validation Checks
+
+1. **Presence Check**: Ensures the variable exists
+2. **Format Check**: Verifies the key starts with `re_`
+3. **Runtime Check**: Validates during form submission
+
+## Testing Your Configuration
+
+After configuring your environment variables:
+
+<Steps>
+  <Step title="Start Development Server">
+    ```bash
+    npm run dev
+    ```
+  </Step>
+
+  <Step title="Navigate to Contact Form">
+    Open your browser and go to the contact section of your landing page.
+  </Step>
+
+  <Step title="Submit Test Form">
+    Fill out the contact form with test data and submit.
+  </Step>
+
+  <Step title="Verify Email">
+    Check that the email was received at the configured destination email address.
+  </Step>
+</Steps>
+
+## Security Best Practices
+
+<Warning>
+Never expose your API keys in client-side code, commit them to version control, or share them publicly.
+</Warning>
+
+### Best Practices
+
+- **Use `.env.local`** for local development (already gitignored by Next.js)
+- **Never commit** environment files to Git
+- **Rotate keys** periodically for enhanced security
+- **Use different keys** for development, staging, and production
+- **Restrict permissions** in Resend to only what's needed (sending access)
+- **Monitor usage** in the Resend dashboard for suspicious activity
+
+## Troubleshooting
+
+### "Configuration error: The Resend API key is invalid"
+
+**Cause**: The API key doesn't start with `re_`
+
+**Solution**: Verify you copied the entire API key from Resend, including the `re_` prefix.
+
+### "Resend API key is not configured"
+
+**Cause**: The environment variable is not set or not loaded
+
+**Solution**:
+1. Verify the variable name is exactly `RESEND_API_KEY`
+2. For local development, ensure `.env.local` exists in the project root
+3. For production, verify the variable is set in your deployment platform
+4. Restart your development server or trigger a new deployment
+
+### Contact Form Returns Generic Error
+
+**Cause**: API request to Resend failed
+
+**Solution**:
+1. Check your Resend dashboard for error logs
+2. Verify your API key has sending permissions
+3. Ensure your domain is verified (if using custom domain)
+4. Check the browser console and server logs for detailed error messages
+
+## Resources
+
+- [Resend Documentation](https://resend.com/docs)
+- [Next.js Environment Variables](https://nextjs.org/docs/basic-features/environment-variables)
+- [Firebase App Hosting Guide](/deployment/firebase)
+- [Netlify Deployment Guide](/deployment/netlify)

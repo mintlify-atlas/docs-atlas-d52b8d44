@@ -1,0 +1,182 @@
+---
+title: Netlify Deployment
+description: Deploy your Product Builders landing page to Netlify with automatic builds, serverless functions, and global CDN
+---
+
+Netlify provides a powerful platform for deploying Next.js applications with automatic builds, serverless functions, and edge network distribution.
+
+## Prerequisites
+
+Before deploying to Netlify, ensure you have:
+
+- A Netlify account ([sign up for free](https://app.netlify.com/signup))
+- Your code in a Git repository (GitHub, GitLab, or Bitbucket)
+- Your [environment variables](/deployment/environment-variables) ready
+
+## Configuration
+
+The project includes a `netlify.toml` configuration file that defines the build settings:
+
+```toml
+[build]
+  command = "next build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+```
+
+### Configuration Details
+
+- **Build Command**: `next build` compiles your Next.js application for production
+- **Publish Directory**: `.next` contains the built application
+- **Next.js Plugin**: `@netlify/plugin-nextjs` enables Next.js features like ISR, SSR, and API routes
+
+<Warning>
+The Next.js plugin is essential for proper Next.js functionality on Netlify. Do not remove it from the configuration.
+</Warning>
+
+## Deployment Steps
+
+<Steps>
+  <Step title="Connect Your Repository">
+    1. Log in to [Netlify](https://app.netlify.com/)
+    2. Click **Add new site** > **Import an existing project**
+    3. Select your Git provider (GitHub, GitLab, or Bitbucket)
+    4. Authorize Netlify to access your repositories
+    5. Select your Product Builders repository
+  </Step>
+
+  <Step title="Configure Build Settings">
+    Netlify will automatically detect your `netlify.toml` configuration. Verify the settings:
+    
+    - **Build command**: `next build`
+    - **Publish directory**: `.next`
+    - **Production branch**: `main` (or your default branch)
+    
+    These settings are already configured in `netlify.toml`, so no manual input is needed.
+  </Step>
+
+  <Step title="Add Environment Variables">
+    Before deploying, add your environment variables:
+    
+    1. In your site settings, go to **Site settings** > **Environment variables**
+    2. Click **Add a variable**
+    3. Add `RESEND_API_KEY` with your Resend API key value
+    
+    See the [Environment Variables](/deployment/environment-variables) guide for details.
+  </Step>
+
+  <Step title="Deploy">
+    Click **Deploy site** to start your first deployment.
+    
+    Netlify will:
+    1. Clone your repository
+    2. Install dependencies
+    3. Run the build command
+    4. Deploy to their global CDN
+    
+    Your site will be live at a Netlify subdomain (e.g., `your-site.netlify.app`).
+  </Step>
+</Steps>
+
+## Continuous Deployment
+
+Netlify automatically deploys your site when you push changes to your Git repository:
+
+- **Production deploys**: Triggered by commits to your main branch
+- **Deploy previews**: Automatically created for pull requests
+- **Branch deploys**: Optional deployment of specific branches
+
+### Deploy Previews
+
+Every pull request gets its own unique URL for testing changes before merging:
+
+1. Create a pull request in your repository
+2. Netlify automatically builds and deploys a preview
+3. Review the preview URL in the PR comments
+4. Merge when ready - production automatically updates
+
+## Custom Domain
+
+To use your own domain:
+
+<Steps>
+  <Step title="Add Domain">
+    In Netlify, go to **Site settings** > **Domain management** > **Add custom domain**
+  </Step>
+
+  <Step title="Configure DNS">
+    Update your domain's DNS settings:
+    
+    - Add Netlify's nameservers, or
+    - Add a CNAME record pointing to your Netlify subdomain
+  </Step>
+
+  <Step title="Enable HTTPS">
+    Netlify automatically provisions a free SSL certificate via Let's Encrypt.
+  </Step>
+</Steps>
+
+## Environment Variables
+
+Manage environment variables in the Netlify dashboard:
+
+1. Go to **Site settings** > **Environment variables**
+2. Add, edit, or delete variables
+3. Trigger a new deploy to apply changes
+
+<Warning>
+Changes to environment variables require a new deployment to take effect. Netlify does not automatically redeploy when you update variables.
+</Warning>
+
+## Monitoring and Logs
+
+### Build Logs
+
+View build logs for each deployment:
+
+1. Go to **Deploys** in your site dashboard
+2. Click on any deployment
+3. View the build log output
+
+### Function Logs
+
+Next.js API routes run as Netlify Functions. View their logs:
+
+1. Go to **Functions** in your site dashboard
+2. Click on a function to see invocation logs
+3. Monitor errors and performance
+
+## Troubleshooting
+
+### Build Failures
+
+If your build fails:
+
+1. Check the build logs in the Netlify dashboard
+2. Verify all dependencies are in `package.json`
+3. Ensure Node.js version compatibility (set in `package.json` if needed)
+4. Check that environment variables are configured
+
+### Next.js Features Not Working
+
+If ISR, SSR, or API routes aren't working:
+
+1. Verify `@netlify/plugin-nextjs` is in `netlify.toml`
+2. Clear cache and redeploy: **Deploys** > **Trigger deploy** > **Clear cache and deploy site**
+3. Check Netlify's Next.js Runtime version compatibility
+
+### Function Timeout Errors
+
+Netlify Functions have a 10-second timeout on the free tier:
+
+1. Optimize slow API routes
+2. Consider upgrading to Pro for 26-second timeouts
+3. Move long-running tasks to background jobs
+
+## Resources
+
+- [Netlify Documentation](https://docs.netlify.com/)
+- [Next.js on Netlify](https://docs.netlify.com/frameworks/next-js/overview/)
+- [Environment Variables Guide](/deployment/environment-variables)

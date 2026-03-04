@@ -1,0 +1,200 @@
+---
+title: "ContactForm"
+description: "Client-side contact form component with validation and server actions integration"
+---
+
+## Overview
+
+The `ContactForm` component is a client-side form that allows users to contact Product Builders. It includes fields for email, service selection, and a message. The form uses React Hook Form for validation, Zod for schema validation, and Next.js server actions for submission.
+
+This is a client component (marked with `"use client"`) that integrates with the shadcn/ui form components and provides real-time validation feedback.
+
+## Component Structure
+
+```tsx
+"use client";
+
+export function ContactForm({
+  offerings,
+}: {
+  offerings: { id: string; title: string }[];
+}) {
+  // Form setup with react-hook-form and zod
+  const [state, formAction] = useActionState(submitContactForm, {
+    message: "",
+    success: false,
+  });
+  
+  // Form implementation
+}
+```
+
+## Usage Example
+
+The ContactForm is typically used within the CtaSection component, but can be used standalone:
+
+```tsx
+import { ContactForm } from "@/components/contact-form";
+
+const offerings = [
+  { id: "intensive", title: "Intensivo de producto digital" },
+  { id: "accelerator", title: "Acelerador de carrera" },
+  // ... more offerings
+];
+
+<ContactForm offerings={offerings} />
+```
+
+## Props
+
+<ParamField path="offerings" type="array" required>
+  Array of offering objects used to populate the service selection dropdown.
+  
+  <ParamField path="offerings[].id" type="string" required>
+    Unique identifier for the offering (used as React key)
+  </ParamField>
+  
+  <ParamField path="offerings[].title" type="string" required>
+    The offering title displayed in the select dropdown
+  </ParamField>
+</ParamField>
+
+## Form Fields
+
+The contact form includes three fields:
+
+### Email Field
+
+- **Label**: "Email"
+- **Placeholder**: "tu@email.com"
+- **Validation**: Must be a valid email address
+- **Error Message**: "Por favor, introduce un email válido."
+
+### Service Selection
+
+- **Label**: "Servicio de interés"
+- **Placeholder**: "Selecciona un servicio"
+- **Options**: Populated from the `offerings` prop
+- **Validation**: Required field
+- **Error Message**: "Por favor, selecciona un servicio."
+
+### Message Field
+
+- **Label**: "Mensaje"
+- **Placeholder**: "Cuéntanos un poco sobre tu proyecto..."
+- **Type**: Textarea (multi-line input)
+- **Validation**: Minimum 10 characters
+- **Error Message**: "El mensaje debe tener al menos 10 caracteres."
+
+## Validation Schema
+
+The form uses Zod for validation:
+
+```tsx
+const getContactSchema = (t: typeof contactTexts.validation) =>
+  z.object({
+    email: z.string().email({
+      message: t.email,
+    }),
+    service: z.string().min(1, {
+      message: t.service,
+    }),
+    message: z.string().min(10, {
+      message: t.message,
+    }),
+  });
+```
+
+## Features
+
+- **Client-Side Validation**: Real-time validation using React Hook Form and Zod
+- **Server Actions**: Submits to `submitContactForm` server action from `@/app/actions`
+- **Toast Notifications**: Shows success or error messages using the toast hook
+- **Form Reset**: Automatically resets form fields after successful submission
+- **Loading State**: Submit button shows "Enviando..." while pending
+- **Disabled State**: Submit button is disabled during submission
+- **Form State Management**: Uses `useActionState` to track server response
+
+## Submit Button Component
+
+The form includes an internal `SubmitButton` component that handles the pending state:
+
+```tsx
+function SubmitButton({
+  pendingText,
+  text,
+}: {
+  pendingText: string;
+  text: string;
+}) {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+    >
+      {pending ? pendingText : text}
+    </Button>
+  );
+}
+```
+
+## Toast Integration
+
+The component uses the `useToast` hook to display notifications:
+
+```tsx
+useEffect(() => {
+  if (state.message) {
+    if (state.success) {
+      toast({
+        title: contactTexts.toast.successTitle,
+        description: state.message,
+      });
+      form.reset();
+    } else {
+      toast({
+        title: contactTexts.toast.errorTitle,
+        description: state.message,
+        variant: "destructive",
+      });
+    }
+  }
+}, [state, toast, form]);
+```
+
+## Customization
+
+All user-facing text is defined in the `contactTexts` object (lines 31-50):
+
+```tsx
+const contactTexts = {
+  title: "Hablemos",
+  emailLabel: "Email",
+  emailPlaceholder: "tu@email.com",
+  serviceLabel: "Servicio de interés",
+  servicePlaceholder: "Selecciona un servicio",
+  messageLabel: "Mensaje",
+  messagePlaceholder: "Cuéntanos un poco sobre tu proyecto...",
+  submitButton: "Enviar Formulario",
+  submitButtonPending: "Enviando...",
+  toast: {
+    successTitle: "¡Formulario enviado!",
+    errorTitle: "Error",
+  },
+  validation: {
+    email: "Por favor, introduce un email válido.",
+    service: "Por favor, selecciona un servicio.",
+    message: "El mensaje debe tener al menos 10 caracteres.",
+  },
+};
+```
+
+## Styling
+
+- Card with semi-transparent white background and backdrop blur
+- Maximum width of `max-w-lg` (32rem)
+- Full-width submit button
+- White input backgrounds for better contrast
+- Responsive spacing with `space-y-6` between fields

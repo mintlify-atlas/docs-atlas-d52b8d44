@@ -1,0 +1,127 @@
+---
+title: "Header"
+description: "Sticky navigation header with logo and call-to-action button"
+---
+
+## Overview
+
+The `Header` component provides the main navigation bar for the Product Builders landing page. It features a sticky header with a dark background, the Product Builders logo, and a call-to-action button that links to the contact section.
+
+The header remains visible at the top of the viewport as users scroll through the page.
+
+## Component Structure
+
+```tsx
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50 w-full bg-[#1a1a1a]/80 backdrop-blur-sm">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+        <Link href="/">
+          <Logo />
+          <span className="sr-only">Product Builders Home</span>
+        </Link>
+        <nav className="flex items-center gap-4">
+          <Button
+            asChild
+            className="transition-transform duration-300 hover:scale-105"
+          >
+            <Link href="#contact">Hablemos</Link>
+          </Button>
+        </nav>
+      </div>
+    </header>
+  );
+}
+```
+
+## Usage Example
+
+From `src/app/page.tsx:50`:
+
+```tsx
+import { Header } from "@/components/header";
+
+export default function Home() {
+  return (
+    <div className="flex min-h-dvh flex-col bg-gray-50/50">
+      <Header />
+      <main className="flex-1">
+        {/* Page content */}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Features
+
+- **Sticky Positioning**: Stays at the top of the viewport while scrolling (`sticky top-0`)
+- **High Z-Index**: Uses `z-50` to ensure it appears above other content
+- **Backdrop Blur**: Semi-transparent dark background with blur effect (`bg-[#1a1a1a]/80 backdrop-blur-sm`)
+- **Responsive Padding**: Adjusts horizontal padding on different screen sizes (`px-4 md:px-6`)
+- **Logo Link**: Clicking the logo returns to the home page
+- **CTA Button**: "Hablemos" button with scale animation on hover
+- **Accessibility**: Includes screen reader text for the logo link
+
+## Navigation Elements
+
+### Logo
+
+The logo is rendered using the `Logo` component and wrapped in a Link to the home page:
+
+```tsx
+<Link href="/">
+  <Logo />
+  <span className="sr-only">Product Builders Home</span>
+</Link>
+```
+
+### Call-to-Action Button
+
+The header includes a single CTA button that scrolls to the contact section:
+
+```tsx
+<Button
+  asChild
+  className="transition-transform duration-300 hover:scale-105"
+>
+  <Link href="#contact">Hablemos</Link>
+</Button>
+```
+
+The button uses:
+- `asChild` prop to render as a Link component
+- Scale transform on hover for interactive feedback
+- Anchor link to `#contact` section
+
+## Customization
+
+To add more navigation items, extend the `<nav>` element:
+
+```tsx
+<nav className="flex items-center gap-4">
+  <Button asChild variant="ghost">
+    <Link href="#services">Servicios</Link>
+  </Button>
+  <Button asChild variant="ghost">
+    <Link href="#offerings">Ofertas</Link>
+  </Button>
+  <Button asChild>
+    <Link href="#contact">Hablemos</Link>
+  </Button>
+</nav>
+```
+
+## Styling
+
+- **Background**: Dark semi-transparent (`#1a1a1a` at 80% opacity)
+- **Backdrop Filter**: Blur effect for glassmorphism aesthetic
+- **Height**: Fixed at 4rem (64px)
+- **Container**: Centered with max-width constraints
+- **Layout**: Flexbox with space-between for logo and nav alignment
+- **Hover Effect**: Button scales to 105% on hover with 300ms transition

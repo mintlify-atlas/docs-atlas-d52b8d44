@@ -1,0 +1,145 @@
+---
+title: offeringsMeta
+description: Metadata array defining available product offerings
+---
+
+## offeringsMeta
+
+An array containing metadata for all available product offerings in the Product Builders application. Each offering is identified by a unique ID representing different product packages or programs.
+
+### Type Definition
+
+```typescript src/lib/data.ts
+type OfferingMeta = {
+  id: 'intensive' | 'accelerator' | 'discovery' | 'scale-up' | 'leadership';
+}
+
+export const offeringsMeta: OfferingMeta[];
+```
+
+### Structure
+
+<ResponseField name="offeringsMeta" type="OfferingMeta[]">
+  Array of offering metadata objects.
+  
+  <ResponseField name="id" type="'intensive' | 'accelerator' | 'discovery' | 'scale-up' | 'leadership'">
+    Unique identifier for the offering. Used for offering selection, routing, and content display.
+  </ResponseField>
+</ResponseField>
+
+### Available Offerings
+
+The array contains five distinct offerings:
+
+| ID | Description |
+|---|---|
+| `intensive` | Intensive training or consultation program |
+| `accelerator` | Business acceleration program |
+| `discovery` | Discovery or assessment phase |
+| `scale-up` | Scaling and growth program |
+| `leadership` | Leadership development program |
+
+### Data Structure
+
+```typescript src/lib/data.ts
+export const offeringsMeta: OfferingMeta[] = [
+  {
+    id: "intensive",
+  },
+  {
+    id: "accelerator",
+  },
+  {
+    id: "discovery",
+  },
+  {
+    id: "scale-up",
+  },
+  {
+    id: "leadership",
+  },
+];
+```
+
+### Usage Example
+
+```typescript
+import { offeringsMeta } from '@/lib/data';
+
+function OfferingsList() {
+  return (
+    <ul>
+      {offeringsMeta.map((offering) => (
+        <li key={offering.id}>
+          <a href={`/offerings/${offering.id}`}>
+            {offering.id}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Dynamic Routing
+
+The offering IDs can be used for dynamic route generation:
+
+```typescript
+import { offeringsMeta } from '@/lib/data';
+
+export function generateStaticParams() {
+  return offeringsMeta.map((offering) => ({
+    slug: offering.id,
+  }));
+}
+```
+
+### Filtering and Selection
+
+```typescript
+import { offeringsMeta } from '@/lib/data';
+
+function getOffering(id: string) {
+  return offeringsMeta.find(offering => offering.id === id);
+}
+
+// Example usage
+const intensive = getOffering('intensive');
+```
+
+### Type Safety
+
+The `id` field uses a union type for compile-time type safety:
+
+```typescript
+type OfferingId = 'intensive' | 'accelerator' | 'discovery' | 'scale-up' | 'leadership';
+
+// TypeScript will error if you use an invalid ID
+const validId: OfferingId = 'intensive'; // ✓
+const invalidId: OfferingId = 'invalid'; // ✗ Type error
+```
+
+### Extensibility
+
+To add a new offering:
+
+1. Update the `OfferingMeta` type definition to include the new ID
+2. Add the new offering object to the `offeringsMeta` array
+
+```typescript
+type OfferingMeta = {
+  id: 'intensive' | 'accelerator' | 'discovery' | 'scale-up' | 'leadership' | 'enterprise';
+}
+
+export const offeringsMeta: OfferingMeta[] = [
+  // ... existing offerings
+  {
+    id: "enterprise",
+  },
+];
+```
+
+### Source Code
+
+See the full implementation at `src/lib/data.ts:23-43`

@@ -1,0 +1,76 @@
+---
+title: "HeroSection"
+description: "Main hero banner component that displays the landing page headline and call-to-action"
+---
+
+## Overview
+
+The `HeroSection` component renders the main hero banner at the top of the landing page. It features a two-column layout with a headline, description text, and a call-to-action button on the left, and a hero image on the right.
+
+This component uses a dark background (`#1a1a1a`) with white text to create high contrast and visual impact.
+
+## Component Structure
+
+The HeroSection is a simple component with no props. It internally fetches the hero image from the placeholder images library.
+
+```tsx
+export function HeroSection() {
+  const heroImage = PlaceHolderImages.find((img) => img.id === "hero-image");
+
+  return (
+    <section id="hero" className="relative w-full bg-[#1a1a1a] text-white">
+      {/* Component content */}
+    </section>
+  );
+}
+```
+
+## Usage Example
+
+From `src/app/page.tsx:52`:
+
+```tsx
+import { HeroSection } from "@/components/hero-section";
+
+export default function Home() {
+  return (
+    <div className="flex min-h-dvh flex-col bg-gray-50/50">
+      <Header />
+      <main className="flex-1">
+        <HeroSection />
+        {/* Other sections */}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Features
+
+- **Responsive Layout**: Two-column grid on desktop (`md:grid-cols-2`), single column on mobile
+- **Hero Image**: Displays a large image with rounded corners and shadow effect
+- **Call-to-Action**: Button that links to the offerings section with hover scale animation
+- **Full Height**: Uses `min-h-[calc(100dvh-4rem)]` to fill viewport height minus header
+- **Dark Theme**: Dark background with white text for maximum contrast
+
+## Customization
+
+To customize the hero section content, modify the text directly in the component:
+
+- **Headline** (line 13-15): The main h1 heading text
+- **Description** (line 16-20): The paragraph text below the headline
+- **Button Text** (line 26): The call-to-action button label
+- **Button Link** (line 26): The href destination for the CTA
+
+## Styling
+
+The component uses:
+- `font-headline` for the main heading
+- Responsive text sizes: `text-4xl md:text-5xl lg:text-6xl`
+- Tailwind's transform and transition utilities for the button hover effect
+- Next.js Image component with `fill` and `object-cover` for responsive images

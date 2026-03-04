@@ -1,80 +1,209 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get the Product Builders landing page running locally in minutes
 ---
 
-## Get started in three steps
+# Quickstart
 
-Get your documentation site running locally and make your first customization.
+Get your Product Builders landing page up and running in just a few minutes.
 
-### Step 1: Set up your local environment
+## Prerequisites
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+Before you begin, make sure you have:
 
-### Step 2: Deploy your changes
+- **Node.js 20+** installed on your machine
+- **npm**, **yarn**, or **pnpm** package manager
+- A code editor (VS Code recommended)
+- Git for version control
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+## Setup steps
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+<Steps>
+  <Step title="Clone the repository">
+    Clone the repository to your local machine:
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    ```bash
+    git clone https://github.com/alvapr0g/landing.git
+    cd landing
+    ```
+  </Step>
 
-### Step 3: Go live
+  <Step title="Install dependencies">
+    Install all required packages using your preferred package manager:
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    <CodeGroup>
+      ```bash npm
+      npm install
+      ```
+
+      ```bash yarn
+      yarn install
+      ```
+
+      ```bash pnpm
+      pnpm install
+      ```
+    </CodeGroup>
+
+    This will install all dependencies including:
+    - Next.js 15.5.9
+    - React 19.2.1
+    - Tailwind CSS 3.4.1
+    - shadcn/ui components
+    - Resend for email
+  </Step>
+
+  <Step title="Set up environment variables">
+    Create a `.env.local` file in the root directory:
+
+    ```bash
+    touch .env.local
+    ```
+
+    Add your Resend API key:
+
+    ```bash
+    RESEND_API_KEY=re_your_api_key_here
+    ```
+
+    <Warning>
+      The contact form requires a valid Resend API key to function. Get one free at [resend.com](https://resend.com).
+    </Warning>
+  </Step>
+
+  <Step title="Start the development server">
+    Run the development server with Turbopack:
+
+    ```bash
+    npm run dev
+    ```
+
+    The server will start on port 9002 by default:
+
+    ```
+    ▲ Next.js 15.5.9
+    - Local:        http://localhost:9002
+    - Turbopack:    enabled
+    ```
+  </Step>
+
+  <Step title="Open in browser">
+    Navigate to [http://localhost:9002](http://localhost:9002) in your browser.
+
+    You should see the Product Builders landing page with:
+    - Hero section with headline and image
+    - Services section showing three services
+    - Offerings section with five programs
+    - Contact form for lead generation
+  </Step>
+</Steps>
+
+## Project structure
+
+Here's a quick overview of the key files:
+
+```
+landing/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx           # Main landing page
+│   │   ├── layout.tsx         # Root layout
+│   │   └── actions.ts         # Server actions (contact form)
+│   ├── components/
+│   │   ├── hero-section.tsx   # Hero banner
+│   │   ├── services-section.tsx
+│   │   ├── offerings-section.tsx
+│   │   ├── contact-form.tsx
+│   │   ├── header.tsx
+│   │   └── footer.tsx
+│   ├── dictionaries/          # i18n translations
+│   │   ├── es.json           # Spanish (default)
+│   │   ├── en.json           # English
+│   │   └── ru.json           # Russian
+│   └── lib/
+│       └── data.ts           # Services and offerings data
+├── tailwind.config.ts        # Tailwind configuration
+├── next.config.ts            # Next.js configuration
+└── package.json
+```
+
+## Customize content
+
+The landing page content is defined in several places:
+
+### Page content
+
+Edit `src/app/page.tsx` to customize offerings:
+
+```tsx src/app/page.tsx
+const offeringsContent = {
+  items: {
+    intensive: {
+      title: "Intensivo de producto digital",
+      description: "Consultoría de 4 semanas para definir la estrategia de producto.",
+      duration: "4 Semanas",
+    },
+    // Add or modify offerings here
+  },
+};
+```
+
+### Services and offerings metadata
+
+Edit `src/lib/data.ts` to modify service icons and IDs:
+
+```tsx src/lib/data.ts
+export const servicesMeta: ServiceMeta[] = [
+  { id: "strategy", icon: Presentation },
+  { id: "mentorship", icon: GraduationCap },
+  { id: "optimization", icon: TrendingUp },
+];
+```
+
+### Translations
+
+Modify translations in `src/dictionaries/es.json`, `en.json`, or `ru.json`:
+
+```json src/dictionaries/es.json
+{
+  "hero": {
+    "title": "Construimos y escalamos productos digitales de alto impacto.",
+    "description": "En Product Builders te ayudamos..."
+  }
+}
+```
+
+## Test the contact form
+
+To test the contact form:
+
+1. Make sure `RESEND_API_KEY` is set in `.env.local`
+2. Navigate to the contact section
+3. Fill out the form with:
+   - Valid email address
+   - Select a service
+   - Enter a message (minimum 10 characters)
+4. Click "Enviar Formulario"
+
+You should see a success toast notification.
+
+<Tip>
+  For testing without a real API key, you can modify `src/app/actions.ts` to skip email sending and return a success response.
+</Tip>
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
-
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Customize theming" icon="palette" href="/customization/theming">
+    Modify colors, fonts, and styling
+  </Card>
+  <Card title="Add languages" icon="language" href="/customization/internationalization">
+    Set up additional language translations
+  </Card>
+  <Card title="Deploy to Firebase" icon="fire" href="/deployment/firebase">
+    Deploy to Firebase App Hosting
+  </Card>
+  <Card title="Deploy to Netlify" icon="cloud" href="/deployment/netlify">
+    Deploy to Netlify in minutes
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

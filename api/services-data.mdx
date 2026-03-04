@@ -1,0 +1,120 @@
+---
+title: servicesMeta
+description: Metadata array defining available services with their icons
+---
+
+## servicesMeta
+
+An array containing metadata for all available services in the Product Builders application. Each service includes an ID and an associated Lucide icon component.
+
+### Type Definition
+
+```typescript src/lib/data.ts
+import { type LucideIcon, Presentation, GraduationCap, TrendingUp } from 'lucide-react';
+
+type ServiceMeta = {
+  id: 'strategy' | 'mentorship' | 'optimization';
+  icon: LucideIcon;
+};
+
+export const servicesMeta: ServiceMeta[];
+```
+
+### Structure
+
+<ResponseField name="servicesMeta" type="ServiceMeta[]">
+  Array of service metadata objects.
+  
+  <ResponseField name="id" type="'strategy' | 'mentorship' | 'optimization'">
+    Unique identifier for the service. Used for service selection and routing.
+  </ResponseField>
+  
+  <ResponseField name="icon" type="LucideIcon">
+    Lucide React icon component representing the service visually.
+  </ResponseField>
+</ResponseField>
+
+### Available Services
+
+The array contains three services:
+
+| ID | Icon | Description |
+|---|---|---|
+| `strategy` | `Presentation` | Strategy consulting services |
+| `mentorship` | `GraduationCap` | Mentorship and coaching services |
+| `optimization` | `TrendingUp` | Optimization and growth services |
+
+### Data Structure
+
+```typescript src/lib/data.ts
+export const servicesMeta: ServiceMeta[] = [
+  {
+    id: "strategy",
+    icon: Presentation,
+  },
+  {
+    id: "mentorship",
+    icon: GraduationCap,
+  },
+  {
+    id: "optimization",
+    icon: TrendingUp,
+  },
+];
+```
+
+### Usage Example
+
+```typescript
+import { servicesMeta } from '@/lib/data';
+
+function ServicesGrid() {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {servicesMeta.map((service) => {
+        const Icon = service.icon;
+        return (
+          <div key={service.id} className="p-4 border rounded">
+            <Icon className="w-8 h-8" />
+            <h3>{service.id}</h3>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+### Integration with Forms
+
+The service IDs are used in the contact form for service selection:
+
+```typescript
+<select name="service">
+  {servicesMeta.map((service) => (
+    <option key={service.id} value={service.id}>
+      {service.id}
+    </option>
+  ))}
+</select>
+```
+
+### Icon Components
+
+All icons are imported from the `lucide-react` package:
+
+- **Presentation**: Represents strategy and planning
+- **GraduationCap**: Represents education and mentorship
+- **TrendingUp**: Represents growth and optimization
+
+### Type Safety
+
+The `id` field uses a union type for type safety, ensuring only valid service identifiers are used:
+
+```typescript
+type ServiceId = 'strategy' | 'mentorship' | 'optimization';
+```
+
+### Source Code
+
+See the full implementation at `src/lib/data.ts:3-21`

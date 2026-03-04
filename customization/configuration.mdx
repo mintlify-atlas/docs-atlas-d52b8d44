@@ -1,0 +1,355 @@
+---
+title: Configuration
+description: Configure Next.js settings, component aliases, and project structure for your Product Builders Landing.
+---
+
+Product Builders Landing uses Next.js 15 with TypeScript and includes several configuration files that control the build process, component system, and development environment.
+
+## Next.js Configuration
+
+The Next.js configuration is defined in `next.config.ts` at the project root:
+
+```typescript
+import type {NextConfig} from 'next';
+
+const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+```
+
+### Key Configuration Options
+
+#### TypeScript Settings
+
+```typescript
+typescript: {
+  ignoreBuildErrors: true,
+}
+```
+
+This allows the build to proceed even if there are TypeScript errors. Consider setting this to `false` in production for stricter type checking.
+
+#### ESLint Settings
+
+```typescript
+eslint: {
+  ignoreDuringBuilds: true,
+}
+```
+
+This skips ESLint checks during the build process. Disable this for stricter linting in production environments.
+
+#### Image Optimization
+
+```typescript
+images: {
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'placehold.co',
+      port: '',
+      pathname: '/**',
+    },
+  ],
+}
+```
+
+Configures allowed remote image sources for the Next.js Image component. Add your CDN or image hosting domains here.
+
+### Adding a New Image Source
+
+To allow images from a new domain:
+
+```typescript
+images: {
+  remotePatterns: [
+    // ... existing patterns
+    {
+      protocol: 'https',
+      hostname: 'your-cdn.com',
+      port: '',
+      pathname: '/**',
+    },
+  ],
+}
+```
+
+## Component Configuration
+
+The `components.json` file configures the shadcn/ui component system:
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}
+```
+
+### Configuration Properties
+
+- `style`: Component variant style ("default" or "new-york")
+- `rsc`: Enable React Server Components
+- `tsx`: Use TypeScript
+- `baseColor`: Base color palette ("neutral", "slate", "gray", etc.)
+- `cssVariables`: Use CSS variables for theming
+- `prefix`: Optional prefix for component class names
+
+### Path Aliases
+
+The aliases configuration maps import paths to file system locations:
+
+```json
+"aliases": {
+  "components": "@/components",
+  "utils": "@/lib/utils",
+  "ui": "@/components/ui",
+  "lib": "@/lib",
+  "hooks": "@/hooks"
+}
+```
+
+This allows you to import like this:
+
+```typescript
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useDictionary } from "@/hooks/use-dictionary";
+```
+
+### Icon Library
+
+```json
+"iconLibrary": "lucide"
+```
+
+Configures Lucide React as the icon library. Components use icons like:
+
+```tsx
+import { Globe, Mail, ChevronRight } from "lucide-react";
+```
+
+## Project Structure
+
+The source code is organized in the `src/` directory:
+
+```
+src/
+├── app/
+│   └── [lang]/           # Dynamic locale routes
+│       ├── layout.tsx    # Root layout with i18n
+│       └── page.tsx      # Home page
+├── components/
+│   ├── ui/               # shadcn/ui components
+│   ├── locale-switcher.tsx
+│   └── ...               # Custom components
+├── dictionaries/
+│   ├── en.json          # English translations
+│   ├── es.json          # Spanish translations
+│   └── ru.json          # Russian translations
+├── hooks/               # Custom React hooks
+├── lib/
+│   ├── dictionaries.ts  # i18n dictionary loader
+│   └── utils.ts         # Utility functions
+├── i18n-config.ts       # i18n configuration
+└── middleware.ts        # Next.js middleware
+```
+
+### Key Directories
+
+#### `app/`
+Contains the Next.js App Router pages and layouts. The `[lang]` directory enables dynamic routing for internationalization.
+
+#### `components/`
+Reusable React components:
+- `ui/` - shadcn/ui components (Button, Card, Dialog, etc.)
+- Custom components for specific features
+
+#### `dictionaries/`
+JSON files containing translations for each supported language.
+
+#### `lib/`
+Shared utilities and helper functions:
+- `dictionaries.ts` - Loads translations
+- `utils.ts` - Common utilities (including `cn()` for class merging)
+
+## Middleware Configuration
+
+The `src/middleware.ts` file configures request handling:
+
+```typescript
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+// No-op middleware to disable i18n routing
+export function middleware(request: NextRequest) {
+  return NextResponse.next();
+}
+
+export const config = {
+  // Matcher ignoring `/_next/` and `/api/`
+  matcher: ["/((?!api|_next/static|_next/image|images|favicon.ico).*)"],
+};
+```
+
+### Matcher Configuration
+
+The matcher defines which routes the middleware applies to:
+
+```typescript
+matcher: ["/((?!api|_next/static|_next/image|images|favicon.ico).*)"]
+```
+
+This excludes:
+- `/api/*` - API routes
+- `/_next/static/*` - Static assets
+- `/_next/image/*` - Image optimization
+- `/images/*` - Public images
+- `/favicon.ico` - Favicon
+
+## Environment Variables
+
+Create a `.env.local` file in the project root for environment-specific configuration:
+
+```bash
+# Example environment variables
+NEXT_PUBLIC_SITE_URL=https://yoursite.com
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# API Keys (server-side only)
+API_KEY=your-secret-key
+```
+
+### Variable Prefixes
+
+- `NEXT_PUBLIC_*` - Exposed to the browser
+- No prefix - Server-side only
+
+### Using Environment Variables
+
+```typescript
+// Client-side (with NEXT_PUBLIC_ prefix)
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+// Server-side (any variable)
+const apiKey = process.env.API_KEY;
+```
+
+## TypeScript Configuration
+
+The `tsconfig.json` in the project root configures TypeScript:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+```
+
+### Path Mapping
+
+The `paths` configuration enables the `@/` import alias:
+
+```json
+"paths": {
+  "@/*": ["./src/*"]
+}
+```
+
+## Tailwind Configuration
+
+Tailwind CSS is configured in `tailwind.config.ts`. See the [Theming](/customization/theming) page for detailed information about customizing colors, fonts, and styles.
+
+## Build Configuration
+
+Build the project for production:
+
+```bash
+npm run build
+```
+
+This generates optimized static files in the `.next/` directory.
+
+### Build Output
+
+- Static pages are pre-rendered
+- Server components are bundled separately
+- Client JavaScript is code-split automatically
+- Images are optimized on-demand
+
+## Development
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The server runs on `http://localhost:3000` with:
+- Fast Refresh for instant feedback
+- Hot Module Replacement
+- Error overlay for debugging

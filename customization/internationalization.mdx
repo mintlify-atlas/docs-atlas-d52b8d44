@@ -1,0 +1,318 @@
+---
+title: Internationalization
+description: Learn how to add and manage multiple languages in your Product Builders Landing with the built-in i18n system.
+---
+
+Product Builders Landing comes with a built-in internationalization (i18n) system supporting multiple languages. The template includes Spanish, English, and Russian translations out of the box.
+
+## How It Works
+
+The i18n implementation uses Next.js dynamic routes with language-specific dictionaries stored as JSON files. The system provides:
+
+- Server-side translations with zero client-side JavaScript overhead
+- Type-safe dictionary access
+- Dynamic locale switching
+- SEO-friendly URLs with language prefixes
+
+## Configuration
+
+The i18n configuration is defined in `src/i18n-config.ts`:
+
+```typescript
+export const i18n = {
+  defaultLocale: "es",
+  locales: ["es", "en"],
+} as const;
+
+export type Locale = (typeof i18n)["locales"][number];
+```
+
+### Available Options
+
+- `defaultLocale`: The fallback language when no locale is specified
+- `locales`: Array of supported language codes
+
+## Dictionary Structure
+
+Translations are stored in `src/dictionaries/` as JSON files. Each locale has its own dictionary file:
+
+- `src/dictionaries/en.json` - English translations
+- `src/dictionaries/es.json` - Spanish translations
+- `src/dictionaries/ru.json` - Russian translations
+
+### Dictionary Format
+
+<Tabs>
+  <Tab title="English">
+    ```json
+    {
+      "metadata": {
+        "title": "Product Builders",
+        "description": "Consulting and mentoring to take your digital product to the next level."
+      },
+      "header": {
+        "contact": "Let's Talk"
+      },
+      "hero": {
+        "title": "We build and scale high-impact digital products.",
+        "subtitle": "At Product Builders, we help you transform ideas into successful products through strategic consulting and specialized mentoring.",
+        "button": "View Services"
+      },
+      "services": {
+        "title": "What we do",
+        "subtitle": "Our mission is to empower teams and products to reach their full potential.",
+        "items": {
+          "strategy": {
+            "title": "Strategic Product Consulting",
+            "description": "We help you define the vision, strategy, and roadmap of your digital product to maximize its market impact."
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Spanish">
+    ```json
+    {
+      "metadata": {
+        "title": "Product Builders",
+        "description": "Consultoría y mentorías para llevar tu producto digital al siguiente nivel."
+      },
+      "header": {
+        "contact": "Hablemos"
+      },
+      "hero": {
+        "title": "Construimos y escalamos productos digitales de alto impacto.",
+        "subtitle": "En Product Builders te ayudamos a transformar ideas en productos exitosos a través de consultoría estratégica y mentoría especializada.",
+        "button": "Ver servicios"
+      },
+      "services": {
+        "title": "Qué hacemos",
+        "subtitle": "Nuestra misión es potenciar a equipos y productos para que alcancen su máximo potencial.",
+        "items": {
+          "strategy": {
+            "title": "Consultoría estratégica de producto",
+            "description": "Te ayudamos a definir la visión, estrategia y roadmap de tu producto digital para maximizar su impacto en el mercado."
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Russian">
+    ```json
+    {
+      "metadata": {
+        "title": "Product Builders",
+        "description": "Консультации и наставничество, чтобы вывести ваш цифровой продукт на новый уровень."
+      },
+      "header": {
+        "contact": "Поговорим"
+      },
+      "hero": {
+        "title": "Мы создаем и масштабируем цифровые продукты с высокой отдачей.",
+        "subtitle": "В Product Builders мы помогаем вам превращать идеи в успешные продукты с помощью стратегического консалтинга и специализированного наставничества.",
+        "button": "Посмотреть услуги"
+      },
+      "services": {
+        "title": "Что мы делаем",
+        "subtitle": "Наша миссия - дать возможность командам и продуктам полностью раскрыть свой потенциал.",
+        "items": {
+          "strategy": {
+            "title": "Стратегический консалтинг по продуктам",
+            "description": "Мы помогаем вам определить видение, стратегию и дорожную карту вашего цифрового продукта, чтобы максимизировать его влияние на рынок."
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Loading Dictionaries
+
+The `getDictionary` function in `src/lib/dictionaries.ts` loads the appropriate dictionary based on the current locale:
+
+```typescript
+import "server-only";
+import type { Locale } from "@/i18n-config";
+
+const dictionaries = {
+  en: () => import("@/dictionaries/en.json").then((module) => module.default),
+  es: () => import("@/dictionaries/es.json").then((module) => module.default),
+};
+
+export const getDictionary = async (locale: Locale) =>
+  dictionaries[locale]?.() ?? dictionaries.es();
+```
+
+This function:
+- Uses dynamic imports for code splitting
+- Falls back to Spanish if the requested locale doesn't exist
+- Is marked with `"server-only"` to prevent accidental client-side usage
+
+## Using Translations in Components
+
+### Server Components
+
+Load translations in server components using `getDictionary`:
+
+```tsx
+import { getDictionary } from "@/lib/dictionaries";
+import type { Locale } from "@/i18n-config";
+
+export default async function Page({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}) {
+  const dict = await getDictionary(lang);
+
+  return (
+    <div>
+      <h1>{dict.hero.title}</h1>
+      <p>{dict.hero.subtitle}</p>
+    </div>
+  );
+}
+```
+
+### Metadata Generation
+
+Generate localized metadata in `layout.tsx`:
+
+```tsx
+export async function generateMetadata({
+  params: { lang },
+}: {
+  params: { lang: Locale };
+}): Promise<Metadata> {
+  const dictionary = await getDictionary(lang);
+  return {
+    title: dictionary.metadata.title,
+    description: dictionary.metadata.description,
+  };
+}
+```
+
+## Language Switcher
+
+The `LocaleSwitcher` component allows users to change languages:
+
+```tsx
+"use client";
+
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { i18n } from "@/i18n-config";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
+
+export function LocaleSwitcher() {
+  const pathName = usePathname();
+
+  const redirectedPathName = (locale: string) => {
+    if (!pathName) return "/";
+    const segments = pathName.split("/");
+    segments[1] = locale;
+    return segments.join("/");
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Globe className="h-[1.2rem] w-[1.2rem]" />
+          <span className="sr-only">Change language</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {i18n.locales.map((locale) => (
+          <DropdownMenuItem key={locale} asChild>
+            <Link href={redirectedPathName(locale)}>
+              {locale.toUpperCase()}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## Adding a New Language
+
+### Step 1: Create Dictionary File
+
+Create a new JSON file in `src/dictionaries/` (e.g., `fr.json` for French):
+
+```json
+{
+  "metadata": {
+    "title": "Product Builders",
+    "description": "Conseil et mentorat pour faire passer votre produit numérique au niveau supérieur."
+  },
+  "header": {
+    "contact": "Parlons-en"
+  },
+  "hero": {
+    "title": "Nous construisons et développons des produits numériques à fort impact.",
+    "subtitle": "Chez Product Builders, nous vous aidons à transformer vos idées en produits réussis.",
+    "button": "Voir les services"
+  }
+}
+```
+
+### Step 2: Update i18n Configuration
+
+Add the new locale to `src/i18n-config.ts`:
+
+```typescript
+export const i18n = {
+  defaultLocale: "es",
+  locales: ["es", "en", "fr"], // Add "fr"
+} as const;
+```
+
+### Step 3: Update Dictionary Loader
+
+Add the import in `src/lib/dictionaries.ts`:
+
+```typescript
+const dictionaries = {
+  en: () => import("@/dictionaries/en.json").then((module) => module.default),
+  es: () => import("@/dictionaries/es.json").then((module) => module.default),
+  fr: () => import("@/dictionaries/fr.json").then((module) => module.default),
+};
+```
+
+### Step 4: Test
+
+Navigate to `/fr` to see your new language in action.
+
+## URL Structure
+
+The i18n system uses locale-prefixed URLs:
+
+- `/es` - Spanish (default)
+- `/en` - English
+- `/ru` - Russian
+- `/fr/about` - French about page
+
+## Static Generation
+
+All locale routes are statically generated at build time using `generateStaticParams`:
+
+```tsx
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }));
+}
+```
+
+This ensures optimal performance with pre-rendered pages for each language.
